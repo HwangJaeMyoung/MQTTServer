@@ -26,8 +26,6 @@ SECRET_KEY = "django-insecure-iai)9+(l0n1al=i4)q3d)jbg6y3&qng5xkbs&tqidv68_=ucz#
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -82,7 +80,7 @@ pymysql.install_as_MySQLdb()
 DATABASES = {
     "default": {
         "ENGINE": 'django.db.backends.mysql',
-        'NAME': 'file_management',
+        'NAME': 'mqtt_server',
         'USER': 'omyo',
         'PASSWORD': '0329',
         'HOST': 'localhost',
@@ -126,8 +124,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
+import os
+STATIC_URL = "/static/"
+STATIC_ROOT = os.path.join(BASE_DIR, 'static') 
 
-STATIC_URL = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
