@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "mqtt"
 ]
 
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 # CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
 MIDDLEWARE = [

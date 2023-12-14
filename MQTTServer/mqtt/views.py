@@ -6,6 +6,7 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.http import require_GET
 from .models import Sensor,SensorValue
 from MQTTServer.utils import VALUE_TYPE_LIST,SENSOR_TYPE_DICT,SENSOR_VALUE_MAP_DICT 
+import struct
 
 def checkSensor(topicList):
     result = False
@@ -22,6 +23,7 @@ def checkSensor(topicList):
         print("error 1 : 잘못된 토픽 요청")
     except :
         print("error 0 : 예상치 못한 에러")
+        print(f"topicList:{topicList}")
     return result
 
 def getSensor(topicList):
@@ -51,21 +53,24 @@ def on_message(client, userdata, msg):
         if(checkSensor(topicList[1:-1])):
             sensor = getSensor(topicList[1:-1])
             if getSensor(topicList[1:-1]).isOnline:
-                pass
+                client.publish(f"{baseTopic}/Confirm",1,qos=1)
+                for topic in SENSOR_VALUE_MAP_DICT[topicList[-3]]:
+                    client.subscribe(f"{baseTopic}/{topic}",qos=1)
             else:
                 sensor.isOnline = True
                 sensor.save()
-                client.publish(f"{baseTopic}/Comfirm",1,qos=1)
+                client.publish(f"{baseTopic}/Confirm",1,qos=1)
                 for topic in SENSOR_VALUE_MAP_DICT[topicList[-3]]:
-                    client.subscribe(f"{baseTopic}/{topic}")
+                    client.subscribe(f"{baseTopic}/{topic}",qos=1)
+
         else:
             client.publish(f"{baseTopic}/Comfirm",0,qos=1)
 
     elif topicList[-1] in VALUE_TYPE_LIST:
         try:
             sensor = getSensor(topicList[1:-1])
-            value = SensorValue(sensor=sensor,valueType=topicList[-1],value=float(msg.payload.decode("utf-8")))
-            value.save()
+            sensorValue = SensorValue(sensor=sensor,valueType=topicList[-1],value=float(msg.payload.decode("utf-8")))
+            sensorValue.save()
         except:
             print("error 3 : 데이터 타입 오류")
             
