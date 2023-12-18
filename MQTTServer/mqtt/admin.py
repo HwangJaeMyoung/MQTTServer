@@ -9,9 +9,10 @@ import matplotlib.dates as mdates
 import io
 from django.utils.safestring import mark_safe
 import numpy as np
-from io import BytesIO
+from io import BytesIO, StringIO
 import base64
 from MQTTServer.utils import SENSOR_TYPE_DICT, SENSOR_VALUE_MAP_DICT
+import zipfile
 
 
 class SensorAdmin(admin.ModelAdmin):
@@ -59,16 +60,23 @@ class SensorAdmin(admin.ModelAdmin):
         return msg
     
     def download_sensor_data(self, request, queryset):
-        for sensor in queryset:
-            sensor_values = sensor.sensorvalue_set.order_by("time").values_list('time', 'value')
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="sensor_data.csv"'
-        writer = csv.writer(response)
-        writer.writerow(['time', 'Value'])
-        for sensor_value in sensor_values:
-            writer.writerow(sensor_value)
-
+        zip_filename = 'data.zip'
+        zip_buffer = BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            for sensor in queryset:
+                for valueType in SENSOR_VALUE_MAP_DICT[SENSOR_TYPE_DICT[sensor.sensorType]]:
+                    csv_data = StringIO()
+                    csv_data.write(u'\ufeff')
+                    writer = csv.writer(csv_data)
+                    writer.writerow(['value', "time"])
+                    SensorValue=sensor.sensorvalue_set.filter(valueType=valueType).order_by("time").values_list('value','time')
+                    for value in SensorValue:
+                        writer.writerow(value)
+                    zip_file.writestr(f'{sensor.location}_{sensor.subLocation}_{sensor.part}_{SENSOR_TYPE_DICT[sensor.sensorType]}_{sensor.sensorIndex}/{valueType}.csv', csv_data.getvalue().encode("utf-8"))
+        response = HttpResponse(zip_buffer.getvalue(), content_type='application/zip')
+        response['Content-Disposition'] = f'attachment; filename="{zip_filename}"'
         return response
+    
     def save_model(self, request, obj, form, change):
         if not change:
             sensor_set = Sensor.objects.filter(
