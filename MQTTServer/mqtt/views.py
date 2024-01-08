@@ -4,9 +4,14 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.views.decorators.http import require_GET
-from .models import Sensor,SensorValue
-from MQTTServer.utils import VALUE_TYPE_LIST,SENSOR_TYPE_DICT,SENSOR_VALUE_MAP_DICT 
+from .models import Sensor,SensorValue,SensorValueFile
+from MQTTServer.utils import VALUE_TYPE_LIST,SENSOR_TYPE_DICT,SENSOR_VALUE_MAP_DICT,MAX_VALUE_NUM
 import struct
+import pandas as pd
+import csv
+from io import StringIO 
+from django.core.files.base import ContentFile
+
 
 def checkSensor(topicList):
     result = False
@@ -44,6 +49,9 @@ broker_port = 1883
 # MQTT 연결 콜백 함수
 def on_connect(client, userdata, flags, rc):
     client.subscribe("ICCMS/+/+/+/+/+/Register")
+    for sensor in Sensor.objects.filter(isOnline = True):
+        for value in SENSOR_VALUE_MAP_DICT[SENSOR_TYPE_DICT[sensor.sensorType]]:
+            client.subscribe(f"ICCMS/{sensor.location}/{sensor.subLocation}/{sensor.part}/{SENSOR_TYPE_DICT[sensor.sensorType]}/{sensor.sensorIndex}/{value}")
 
 def on_message(client, userdata, msg):
     # 토픽에 따라 다른 작업 수행
@@ -56,12 +64,14 @@ def on_message(client, userdata, msg):
                 client.publish(f"{baseTopic}/Confirm",1,qos=1)
                 for topic in SENSOR_VALUE_MAP_DICT[topicList[-3]]:
                     client.subscribe(f"{baseTopic}/{topic}",qos=1)
+
             else:
                 sensor.isOnline = True
                 sensor.save()
                 client.publish(f"{baseTopic}/Confirm",1,qos=1)
                 for topic in SENSOR_VALUE_MAP_DICT[topicList[-3]]:
                     client.subscribe(f"{baseTopic}/{topic}",qos=1)
+            print("Register")
 
         else:
             client.publish(f"{baseTopic}/Comfirm",0,qos=1)
@@ -71,11 +81,37 @@ def on_message(client, userdata, msg):
             sensor = getSensor(topicList[1:-1])
             sensorValue = SensorValue(sensor=sensor,valueType=topicList[-1],value=float(msg.payload.decode("utf-8")))
             sensorValue.save()
+
+            for type in SENSOR_VALUE_MAP_DICT[SENSOR_TYPE_DICT[sensor.sensorType]]:
+                if len(sensor.sensorvalue_set.filter(valueType=type)) >= MAX_VALUE_NUM or (sensor.time.day != sensorValue.time.day and len(sensor.sensorvalue_set.filter(valueType=type)) != 0 and sensor.time != None):
+                    data_list = sensor.sensorvalue_set.filter(valueType=type).order_by("time").values_list("time","value")
+                    csv_data = StringIO()
+                    csv_data.write(u'\ufeff')
+                    writer = csv.writer(csv_data)
+                    writer.writerow(["",'Time_[s]', "Acceleration[g]"])
+                    for i, value in enumerate(data_list):
+                        time = (value[0] - data_list[0][0]).seconds
+                        writer.writerow([i,time,value[1]])
+                    file_content = csv_data.getvalue().encode("utf-8")
+                    sensorValueFile= SensorValueFile(sensor=sensor,valueType=type,time= data_list[0][0])
+                    sensorValueFile.file.save(
+                        f'{sensor.location}_{sensor.subLocation}_{sensor.part}_{SENSOR_TYPE_DICT[sensor.sensorType]}_{sensor.sensorIndex}/{data_list[0][0].year}_{data_list[0][0].month}_{data_list[0][0].day}_raw_{type}/{data_list[0][0].year}_{data_list[0][0].month}_{data_list[0][0].day}-{data_list[0][0].hour}_{data_list[0][0].minute}_{data_list[0][0].second}_timeraw_{type.lower()}.csv',
+                        ContentFile(file_content))
+                    sensorValueFile.save()
+                    for value in sensor.sensorvalue_set.filter(valueType=type):
+                        value.delete()
+
+            sensor.time= sensorValue.time
+            sensor.save()
         except:
             print("error 3 : 데이터 타입 오류")
-            
+        
+ 
+
+    
 # MQTT 클라이언트 생성
 client = mqtt.Client()
+
 client.on_connect = on_connect
 client.on_message = on_message
 

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Sensor, SensorValue
+from .models import Sensor, SensorValue,SensorValueFile
 import csv
 from django.http import HttpResponse
 import matplotlib
@@ -60,19 +60,14 @@ class SensorAdmin(admin.ModelAdmin):
         return msg
     
     def download_sensor_data(self, request, queryset):
-        zip_filename = 'data.zip'
-        zip_buffer = BytesIO()
+        zip_filename = 'ICCMS.zip'
+        zip_buffer = BytesIO()            
         with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
-            for sensor in queryset:
-                for valueType in SENSOR_VALUE_MAP_DICT[SENSOR_TYPE_DICT[sensor.sensorType]]:
-                    csv_data = StringIO()
-                    csv_data.write(u'\ufeff')
-                    writer = csv.writer(csv_data)
-                    writer.writerow(['value', "time"])
-                    SensorValue=sensor.sensorvalue_set.filter(valueType=valueType).order_by("time").values_list('value','time')
-                    for value in SensorValue:
-                        writer.writerow(value)
-                    zip_file.writestr(f'{sensor.location}_{sensor.subLocation}_{sensor.part}_{SENSOR_TYPE_DICT[sensor.sensorType]}_{sensor.sensorIndex}/{valueType}.csv', csv_data.getvalue().encode("utf-8"))
+            for obj in queryset:
+                for file in obj.sensorvaluefile_set.all():
+                    with file.file.open() as f:
+                        zip_file.writestr(file.file.name,f.read())
+
         response = HttpResponse(zip_buffer.getvalue(), content_type='application/zip')
         response['Content-Disposition'] = f'attachment; filename="{zip_filename}"'
         return response
@@ -105,9 +100,10 @@ class SensorAdmin(admin.ModelAdmin):
                     sensor.save()
         obj.delete()
     
-    download_sensor_data.short_description = 'Download csv'
+    download_sensor_data.short_description = 'Download csv zip'
     get_graph.short_description = "Graph"
     get_name.short_description = 'Name'
 
 admin.site.register(Sensor,SensorAdmin)
-admin.site.register(SensorValue)
+# admin.site.register(SensorValue)
+# admin.site.register(SensorValueFile)

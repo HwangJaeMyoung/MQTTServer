@@ -117,11 +117,11 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -129,6 +129,9 @@ USE_TZ = True
 import os
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, 'static') 
+
+MEDIA_URL="/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR,"media")
 
 
 # Default primary key field type
