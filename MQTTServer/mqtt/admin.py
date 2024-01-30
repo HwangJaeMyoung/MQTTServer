@@ -105,5 +105,5 @@ class SensorAdmin(admin.ModelAdmin):
     get_name.short_description = 'Name'
 
 admin.site.register(Sensor,SensorAdmin)
-# admin.site.register(SensorValue)
-# admin.site.register(SensorValueFile)
+admin.site.register(SensorValue)
+admin.site.register(SensorValueFile)
