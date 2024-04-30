@@ -1,6 +1,6 @@
 
-# MAX_VALUE_NUM = 4096
-MAX_VALUE_NUM = 100
+MAX_VALUE_NUM = 4096
+# MAX_VALUE_NUM = 3600
 
 
 VALUE_TYPE_LIST = ["X","Y","Z","Temperature","Humidity","Current"]

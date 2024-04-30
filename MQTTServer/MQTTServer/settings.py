@@ -83,8 +83,8 @@ DATABASES = {
     "default": {
         "ENGINE": 'django.db.backends.mysql',
         'NAME': 'mqtt_server',
-        'USER': 'omyo',
-        'PASSWORD': '0329',
+        'USER': 'DT_TUKOREA',
+        'PASSWORD': 'DiK_WiMiS_30!',
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {

@@ -15,8 +15,9 @@ class SensorValue(models.Model):
     sensor =  models.ForeignKey(Sensor, on_delete=models.CASCADE)
     valueType = models.CharField(max_length=255)
     value = models.FloatField(default=0)
-    time= models.DateTimeField(auto_now_add=True)
-
+    # time= models.DateTimeField(auto_now_add=True)
+    time= models.DateTimeField()
+    
 class SensorValueFile(models.Model):
     sensor =  models.ForeignKey(Sensor, on_delete=models.CASCADE)
     valueType = models.CharField(max_length=255)

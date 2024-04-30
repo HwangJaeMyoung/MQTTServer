@@ -11,7 +11,7 @@ import pandas as pd
 import csv
 from io import StringIO 
 from django.core.files.base import ContentFile
-
+from django.utils import timezone
 
 def checkSensor(topicList):
     result = False
@@ -56,7 +56,7 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     # 토픽에 따라 다른 작업 수행
     topicList = msg.topic.split("/")
-    baseTopic  = "/".join(topicList[:-1]) 
+    baseTopic  = "/".join(topicList[:-1])
     if topicList[-1] == "Register":
         if(checkSensor(topicList[1:-1])):
             sensor = getSensor(topicList[1:-1])
@@ -71,7 +71,7 @@ def on_message(client, userdata, msg):
                 client.publish(f"{baseTopic}/Confirm",1,qos=1)
                 for topic in SENSOR_VALUE_MAP_DICT[topicList[-3]]:
                     client.subscribe(f"{baseTopic}/{topic}",qos=1)
-            print("Register")
+            print(f"Register{topicList[2]}")
 
         else:
             client.publish(f"{baseTopic}/Comfirm",0,qos=1)
@@ -79,21 +79,30 @@ def on_message(client, userdata, msg):
     elif topicList[-1] in VALUE_TYPE_LIST:
         try:
             sensor = getSensor(topicList[1:-1])
-            sensorValue = SensorValue(sensor=sensor,valueType=topicList[-1],value=float(msg.payload.decode("utf-8")))
-            sensorValue.save()
+            messages = msg.payload.decode("utf-8")
+            now = timezone.now()
 
+            for i, type in  enumerate(SENSOR_VALUE_MAP_DICT[SENSOR_TYPE_DICT[sensor.sensorType]]):
+                # sensorValue = SensorValue(sensor=sensor,valueType=type,value=float(msg.payload.decode("utf-8"))) # 수정해야함
+                sensorValue = SensorValue(sensor=sensor,valueType=type,value=float(messages.split("_")[i]),time= now) # 수정해야함
+                sensorValue.save()
+            
             for type in SENSOR_VALUE_MAP_DICT[SENSOR_TYPE_DICT[sensor.sensorType]]:
                 if len(sensor.sensorvalue_set.filter(valueType=type)) >= MAX_VALUE_NUM or (sensor.time.day != sensorValue.time.day and len(sensor.sensorvalue_set.filter(valueType=type)) != 0 and sensor.time != None):
+
                     data_list = sensor.sensorvalue_set.filter(valueType=type).order_by("time").values_list("time","value")
                     csv_data = StringIO()
                     csv_data.write(u'\ufeff')
                     writer = csv.writer(csv_data)
                     writer.writerow(["",'Time_[s]', "Acceleration[g]"])
+                    
                     for i, value in enumerate(data_list):
                         time = (value[0] - data_list[0][0]).seconds
                         writer.writerow([i,time,value[1]])
+
                     file_content = csv_data.getvalue().encode("utf-8")
                     sensorValueFile= SensorValueFile(sensor=sensor,valueType=type,time= data_list[0][0])
+                    
                     sensorValueFile.file.save(
                         f'{sensor.location}_{sensor.subLocation}_{sensor.part}_{SENSOR_TYPE_DICT[sensor.sensorType]}_{sensor.sensorIndex}/{data_list[0][0].year}_{data_list[0][0].month}_{data_list[0][0].day}_raw_{type}/{data_list[0][0].year}_{data_list[0][0].month}_{data_list[0][0].day}-{data_list[0][0].hour}_{data_list[0][0].minute}_{data_list[0][0].second}_timeraw_{type.lower()}.csv',
                         ContentFile(file_content))
@@ -110,7 +119,7 @@ def on_message(client, userdata, msg):
 
     
 # MQTT 클라이언트 생성
-client = mqtt.Client()
+client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1)
 
 client.on_connect = on_connect
 client.on_message = on_message
