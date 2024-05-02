@@ -95,8 +95,8 @@ class SensorAdmin(admin.ModelAdmin):
             pass
         else:
             for sensor in sensor_set:
-                if obj.sensorIndex < sensor.sensorIndex:
-                    sensor.sensorIndex -= 1
+                if obj.sensorIndex < sensor.index:
+                    sensor.index -= 1
                     sensor.save()
         obj.delete()
     

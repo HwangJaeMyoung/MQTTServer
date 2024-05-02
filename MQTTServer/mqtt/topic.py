@@ -1,11 +1,10 @@
-from .models import SENSOR_TYPE_VALUES
 
 class SensorTopic:
     REGISTER = "Register"
     CONFIRM = "Confirm"
     NOTHING = "Nothing"
+    VALUE = "Value"
     ICCMS  = "ICCMS"
-    __SENSOR_TYPE_LEVEL = 5
 
     @staticmethod
     def init_from_list(sensor_data:list):
@@ -29,20 +28,15 @@ class SensorTopic:
         separated_confirm_topic=self.separate()[0].append(SensorTopic.CONFIRM)
         return SensorTopic('/'.join(separated_confirm_topic))
     
-    def collect(self):
-        sensor_type = self.__topic_per_level[SensorTopic.__SENSOR_TYPE_LEVEL]
-        collect_topics = []
-        for value_type in SENSOR_TYPE_VALUES[sensor_type]:
-            separated_collect_topic =  self.separate()[0].append(value_type)
-            collect_topics.append(SensorTopic('/'.join(separated_collect_topic)))
-        return collect_topics
+    def value(self):
+        separated_value_topic=self.separate()[0].append(SensorTopic.VALUE)
+        return SensorTopic('/'.join(separated_value_topic))
     
     def __getitem__(self, index):
         return self.__topic_per_level[index]
     
     def __str__(self) -> str:
         return self.__topic
-    
     
 
 REGISTER_TOPIC = SensorTopic("ICCMS/+/+/+/+/+/Register")
