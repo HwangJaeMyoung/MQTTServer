@@ -77,6 +77,8 @@ WSGI_APPLICATION = "MQTTServer.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 import pymysql
+# pymysql.version_info = (1, 3, 13, "final", 0)
+pymysql.version_info = (1, 4, 3, "final", 0)
 pymysql.install_as_MySQLdb()
 
 DATABASES = {

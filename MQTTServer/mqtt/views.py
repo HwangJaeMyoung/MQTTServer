@@ -81,15 +81,12 @@ def on_message(client, userdata, msg):
             sensor = getSensor(topicList[1:-1])
             messages = msg.payload.decode("utf-8")
             now = timezone.now()
-
             for i, type in  enumerate(SENSOR_VALUE_MAP_DICT[SENSOR_TYPE_DICT[sensor.sensorType]]):
-                # sensorValue = SensorValue(sensor=sensor,valueType=type,value=float(msg.payload.decode("utf-8"))) # 수정해야함
-                sensorValue = SensorValue(sensor=sensor,valueType=type,value=float(messages.split("_")[i]),time= now) # 수정해야함
+                sensorValue = SensorValue(sensor=sensor,valueType=type,value=float(messages.split("_")[i]),time= now)
                 sensorValue.save()
             
             for type in SENSOR_VALUE_MAP_DICT[SENSOR_TYPE_DICT[sensor.sensorType]]:
                 if len(sensor.sensorvalue_set.filter(valueType=type)) >= MAX_VALUE_NUM or (sensor.time.day != sensorValue.time.day and len(sensor.sensorvalue_set.filter(valueType=type)) != 0 and sensor.time != None):
-
                     data_list = sensor.sensorvalue_set.filter(valueType=type).order_by("time").values_list("time","value")
                     csv_data = StringIO()
                     csv_data.write(u'\ufeff')
@@ -120,12 +117,11 @@ def on_message(client, userdata, msg):
     
 # MQTT 클라이언트 생성
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1)
-
 client.on_connect = on_connect
 client.on_message = on_message
 
 # MQTT 브로커에 연결
-client.connect(broker_address, broker_port, 60)
+client.connect(broker_address, broker_port, 0)
 client.loop_start()
 
 # Django view 함수
