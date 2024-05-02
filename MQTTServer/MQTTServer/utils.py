@@ -1,10 +1,3 @@
-
-MAX_VALUE_NUM = 4096
-# MAX_VALUE_NUM = 3600
-
-
-VALUE_TYPE_LIST = ["X","Y","Z","Temperature","Humidity","Current"]
-
 SENSOR_TYPE_DICT = {
     0:"Vibration",
     1:"Temperature",

@@ -38,7 +38,6 @@ class SensorTopic:
     def __str__(self) -> str:
         return self.__topic
     
-
 REGISTER_TOPIC = SensorTopic("ICCMS/+/+/+/+/+/Register")
 
 if __name__ == "__main__":
