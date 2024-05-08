@@ -6,8 +6,6 @@ from enum import Enum
 import csv
 from io import StringIO 
 
-
-
 class Sensor(models.Model):
     MAX_VALUE_NUM = 4096
     class SensorType(Enum):
@@ -45,9 +43,6 @@ class Sensor(models.Model):
         def __getitem__(self, index):
             return self.data[index]
 
-        def __str__(self):
-            return f"{self.data[0]}:{self.data[1]}:{self.data[2]}:{self.data[3]}:{self.data[4]}"
-
     @staticmethod
     def select(data:list):
         try:
@@ -69,8 +64,9 @@ class Sensor(models.Model):
     def getValueType(self):
         return Sensor.SENSOR_TYPE_VALUES[self.getType()]
 
-    def getData(self):
-        return [self.location,self.subLocation,self.part,Sensor.SensorType(self.type),str(self.index)]
+    def getName(self):
+        return f"{self.location}/{self.subLocation}/{self.part}/{self.getType()}/{str(self.index)}"
+
     
     def setTime(self):
         self.time = timezone.now

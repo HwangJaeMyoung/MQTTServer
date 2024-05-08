@@ -7,7 +7,8 @@ class SensorTopic:
     ICCMS  = "ICCMS"
 
     @staticmethod
-    def init_from_list(sensor_data:list):
+    def init_from_sensor(sensor_name:str):
+        sensor_data=sensor_name.split("/")
         sensor_data.insert(0,SensorTopic.ICCMS)
         sensor_data.append(SensorTopic.NOTHING)
         return SensorTopic('/'.join(sensor_data))
@@ -29,7 +30,8 @@ class SensorTopic:
         return SensorTopic('/'.join(separated_confirm_topic))
     
     def value(self):
-        separated_value_topic=self.separate()[0].append(SensorTopic.VALUE)
+        separated_value_topic = self.separate()[0]
+        separated_value_topic.append(SensorTopic.VALUE)
         return SensorTopic('/'.join(separated_value_topic))
     
     def __getitem__(self, index):
