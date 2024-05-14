@@ -31,14 +31,14 @@ class Sensor(models.Model):
     location = models.CharField(max_length=255)
     subLocation = models.CharField(max_length=255)
     part = models.CharField(max_length=255)
-    type = models.IntegerField(choices=SENSOR_TYPE_CHOICES)
+    kind = models.IntegerField(choices=SENSOR_TYPE_CHOICES)
     index = models.IntegerField()
     isOnline = models.BooleanField(default=False)
     time = models.DateTimeField(null=True,blank=True)
 
     class interface:
         def __init__(self,data:list) -> None:
-            self.data = [data[0],data[1],data[2],Sensor.SensorType[data[3]],int(data[4])]
+            self.data = [data[0],data[1],data[2],Sensor.SensorType[data[3]].value,int(data[4])]
 
         def __getitem__(self, index):
             return self.data[index]
@@ -47,7 +47,13 @@ class Sensor(models.Model):
     def select(data:list):
         try:
             sensor_interface = Sensor.interface(data)
-            sensor = Sensor.objects.get(sensor_interface[:])
+            sensor = Sensor.objects.get(
+                location=sensor_interface[0],
+                subLocation=sensor_interface[1],
+                part=sensor_interface[2],
+                kind=sensor_interface[3],
+                index=sensor_interface[4]
+            )
             return sensor
         except Sensor.DoesNotExist:
             print("error 1 : 존재하지 않는 센서")
@@ -58,39 +64,41 @@ class Sensor(models.Model):
             print(f"topic:{data}")
             return False
         
-    def getType(self):
-        return Sensor.SensorType(self.type).name
+    def getKind(self):
+        return Sensor.SensorType(self.kind).name
     
     def getValueType(self):
-        return Sensor.SENSOR_TYPE_VALUES[self.getType()]
+        return Sensor.SENSOR_TYPE_VALUES[self.getKind()]
 
     def getName(self):
-        return f"{self.location}/{self.subLocation}/{self.part}/{self.getType()}/{str(self.index)}"
+        return f"{self.location}/{self.subLocation}/{self.part}/{self.getKind()}/{str(self.index)}"
 
     
     def setTime(self):
-        self.time = timezone.now
+        self.time = timezone.now()
+        return self.time
 
 
 class SensorValue(models.Model):
     sensor =  models.ForeignKey(Sensor, on_delete=models.CASCADE)
-    type = models.CharField(max_length=255)
+    kind = models.CharField(max_length=255)
     value = models.FloatField(default=0)
     time= models.DateTimeField()
     
     @staticmethod
     def create_sensorValue(sensor:Sensor,value_list:list):
-        sensor.setTime()
-        for i, type in enumerate(sensor.getValueType()):
-            sensorValue = SensorValue(sensor=sensor,valueType=type,value=float(value_list[i]),time= sensor.time) 
+        now_time = sensor.setTime()
+        sensor.save()
+        for i, kind in enumerate(sensor.getValueType()):
+            sensorValue = SensorValue(sensor=sensor,kind=kind,value=float(value_list[i]),time= now_time) 
             sensorValue.save()
             sensorValue.create_sensorValueFile()
-        sensor.save()
 
 
     def create_sensorValueFile(self):
-        sensorValue_list= self.sensor.sensorvalue_set.filter(valueType=self.type)
-        sensorValue_count = len(self.sensor.sensorvalue_set.filter(valueType=self.type))
+        sensorValue_list= self.sensor.sensorvalue_set.filter(kind=self.kind)
+        sensorValue_count = len(sensorValue_list)
+        print(f"{self.kind}:{sensorValue_count}")
         if sensorValue_count == 0: return
         if sensorValue_count < Sensor.MAX_VALUE_NUM and (self.sensor.time.day == self.time.day): return
 
@@ -105,7 +113,7 @@ class SensorValue(models.Model):
             writer.writerow([i,time,value[1]])
 
         file_content = csv_data.getvalue().encode("utf-8")
-        sensorValueFile= SensorValueFile(sensor=self.sensor,valueType=self.type,time= sensorValue_time_value_list[0][0])
+        sensorValueFile= SensorValueFile(sensor=self.sensor,valueKind=self.kind,time= sensorValue_time_value_list[0][0])
         sensorValueFile.setfile(file_content)
         sensorValueFile.save()
 
@@ -115,16 +123,16 @@ class SensorValue(models.Model):
 
 class SensorValueFile(models.Model):
     sensor =  models.ForeignKey(Sensor, on_delete=models.CASCADE)
-    valueType = models.CharField(max_length=255)
+    valueKind = models.CharField(max_length=255)
     time= models.DateTimeField()
     file = models.FileField(upload_to="data/",max_length=200)
     def setfile(self,file_content):
             self.file.save(self.getFileName(),ContentFile(file_content))
     def getFileName(self):
-        filename_sensor =  f'{self.sensor.location}_{self.sensor.subLocation}_{self.sensor.part}_{self.sensor.getType()}_{self.sensor.index}'
-        filename_day = f'/{self.time.year}_{self.time.month}_{self.time.day}'
-        filename_time = f'{self.time.hour}_{self.time.minute}_{self.time.second}'
-        filename= f"{filename_sensor}/{filename_day}_raw_{self.valueType}/{filename_day}-{filename_time}_timeraw_{self.valueType.lower()}.csv"
+        filename_sensor =  f'{self.sensor.location}_{self.sensor.subLocation}_{self.sensor.part}_{self.sensor.getKind()}_{self.sensor.index}'
+        filename_day = f'/{self.time.year:04}_{self.time.month:02}_{self.time.day:02}'
+        filename_time = f'{self.time.hour:02}_{self.time.minute:02}_{self.time.second:02}'
+        filename= f"{filename_sensor}/{filename_day}_raw_{self.valueKind}/{filename_day}-{filename_time}_timeraw_{self.valueKind.lower()}.csv"
         return filename
 
 

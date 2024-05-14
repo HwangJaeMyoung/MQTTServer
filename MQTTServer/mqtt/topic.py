@@ -3,7 +3,7 @@ class SensorTopic:
     REGISTER = "Register"
     CONFIRM = "Confirm"
     NOTHING = "Nothing"
-    VALUE = "Value"
+    VALUE = "X"
     ICCMS  = "ICCMS"
 
     @staticmethod
@@ -20,18 +20,21 @@ class SensorTopic:
         self.__topic = topic
 
     def isRegister(self):
-        return self.__topic_per_level == SensorTopic.REGISTER
+        return self.__topic_per_level[-1] == SensorTopic.REGISTER
     
     def separate(self):
         return self.__topic_per_level[1:-1],self.__topic_per_level[-1]
 
     def confirm(self):
-        separated_confirm_topic=self.separate()[0].append(SensorTopic.CONFIRM)
+        separated_confirm_topic=self.separate()[0]
+        separated_confirm_topic.append(SensorTopic.CONFIRM)
+        separated_confirm_topic.insert(0,SensorTopic.ICCMS)
         return SensorTopic('/'.join(separated_confirm_topic))
     
     def value(self):
         separated_value_topic = self.separate()[0]
         separated_value_topic.append(SensorTopic.VALUE)
+        separated_value_topic.insert(0,SensorTopic.ICCMS)
         return SensorTopic('/'.join(separated_value_topic))
     
     def __getitem__(self, index):

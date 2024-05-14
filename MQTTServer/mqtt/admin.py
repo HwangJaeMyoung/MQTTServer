@@ -19,7 +19,7 @@ import zipfile
 
 class SensorAdmin(admin.ModelAdmin):
     list_display = ("get_name","is_online")
-    list_filter = ('location', 'subLocation','type',)
+    list_filter = ('location', 'subLocation','kind',)
     readonly_fields = ("index",) #("sensorIndex","get_graph",)
     actions = ["download_sensor_data",]
     # def get_graph(self, obj):
@@ -80,7 +80,7 @@ class SensorAdmin(admin.ModelAdmin):
                 location = obj.location,
                 subLocation = obj.subLocation,
                 part = obj.part,
-                type= obj.type)
+                kind= obj.kind)
             if sensor_set.exists():
                 obj.index= len(sensor_set) + 1
             else:
@@ -92,7 +92,7 @@ class SensorAdmin(admin.ModelAdmin):
             location = obj.location,
             subLocation = obj.subLocation,
             part = obj.part,
-            type= obj.type)
+            kind= obj.kind)
         if len(sensor_set) == 1:
             pass
         else:
