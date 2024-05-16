@@ -6,19 +6,20 @@ from .models import Sensor,SensorValue
  
 # 서버의 클라이언트 클래스
 class ServerClient(mqtt.Client):
-    def __init__(self, callback_api_version: mqtt.CallbackAPIVersion = mqtt.CallbackAPIVersion.VERSION1, client_id: str | None = "", clean_session: bool | None = None, userdata: mqtt.Any = None, protocol: mqtt.MQTTProtocolVersion = ..., transport: Literal['tcp'] | Literal['websockets'] | Literal['unix'] = "tcp", reconnect_on_failure: bool = True, manual_ack: bool = False) -> None:
+    # def __init__(self, callback_api_version: mqtt.CallbackAPIVersion = mqtt.CallbackAPIVersion.VERSION2, client_id: str | None = "", clean_session: bool | None = None, userdata: mqtt.Any = None, protocol: mqtt.MQTTProtocolVersion = ..., transport: Literal['tcp'] | Literal['websockets'] | Literal['unix'] = "tcp", reconnect_on_failure: bool = True, manual_ack: bool = False) -> None:
+    #     super().__init__(callback_api_version, client_id, clean_session, userdata, protocol, transport, reconnect_on_failure, manual_ack)
+    def __init__(self, callback_api_version: mqtt.CallbackAPIVersion = mqtt.CallbackAPIVersion.VERSION1, client_id: str | None = "", clean_session: bool | None = None, userdata: mqtt.Any = None, protocol: mqtt.MQTTProtocolVersion = mqtt.MQTTv311, transport: str = "tcp", reconnect_on_failure: bool = True, manual_ack: bool = False) -> None:
         super().__init__(callback_api_version, client_id, clean_session, userdata, protocol, transport, reconnect_on_failure, manual_ack)
     
-    def on_connect(client, userdata, flags, rc):
-        client.subscribe(REGISTER_TOPIC)
-        
+    def on_connect(self,client, userdata, flags, rc):
+        client.subscribe(REGISTER_TOPIC.__str__())
         for sensor in Sensor.objects.filter(isOnline = True):
-            sensor_data = sensor.getData()
-            onlinedTopic=SensorTopic.init_from_list(sensor_data)
+            sensor_name = sensor.getName()
+            onlinedTopic=SensorTopic.init_from_sensor(sensor_name)
             value_topic = onlinedTopic.value()
-            client.subscribe(value_topic,qos=1)
+            client.subscribe(value_topic.__str__(),qos=1)
 
-    def on_message(client, userdata, msg):
+    def on_message(self, client, userdata, msg):
         receivedTopic = SensorTopic(msg.topic)
         sensor = Sensor.select(receivedTopic.separate()[0])
 
@@ -26,15 +27,16 @@ class ServerClient(mqtt.Client):
         if receivedTopic.isRegister():
             if not sensor.isOnline:return
             confirm_topic= receivedTopic.confirm()
-            client.publish(confirm_topic,1,qos=1)
-            
-            value_topic = receivedTopic.value()
-            client.subscribe(value_topic,qos=1)
+            client.publish(confirm_topic.__str__(),1,qos=1)
 
+            value_topic = confirm_topic.value()
+            client.subscribe(value_topic.__str__(),qos=1)
+            return
         else:
             received_msg = msg.payload.decode("utf-8")
             received_value = received_msg.split("_")
             SensorValue.create_sensorValue(sensor,received_value)
+            return
             
 if __name__ == "__main__":
     broker_address = "localhost"
@@ -43,3 +45,4 @@ if __name__ == "__main__":
     client =ServerClient()
     client.connect(broker_address, broker_port, 0)
     client.loop_start()
+

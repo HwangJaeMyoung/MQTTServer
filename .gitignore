@@ -4,3 +4,6 @@ MQTTServer/logs
 MQTTServer/run
 MQTTServer/media
 MQTTServer/django.log
+
+run/*
+
