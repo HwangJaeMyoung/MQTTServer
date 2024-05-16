@@ -11,7 +11,6 @@ from django.utils.safestring import mark_safe
 import numpy as np
 from io import BytesIO, StringIO
 import base64
-from MQTTServer.utils import SENSOR_TYPE_DICT, SENSOR_VALUE_MAP_DICT
 from .models import Sensor
 import zipfile
 
