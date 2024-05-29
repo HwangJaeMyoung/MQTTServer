@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.files.base import ContentFile
 from django.utils import timezone
-
+from datetime import datetime
 from enum import Enum
 import csv
 from io import StringIO 
@@ -81,58 +81,63 @@ class Sensor(models.Model):
 
 class SensorValue(models.Model):
     sensor =  models.ForeignKey(Sensor, on_delete=models.CASCADE)
-    kind = models.CharField(max_length=255)
-    value = models.FloatField(default=0)
+    # kind = models.CharField(max_length=255)
+    # value = models.FloatField(default=0)
+    value = models.JSONField()
     time= models.DateTimeField()
     
     @staticmethod
-    def create_sensorValue(sensor:Sensor,value_list:list):
+    def create_sensorValue(sensor:Sensor,data:list):
         now_time = sensor.setTime()
         sensor.save()
-        for i, kind in enumerate(sensor.getValueType()):
-            sensorValue = SensorValue(sensor=sensor,kind=kind,value=float(value_list[i]),time= now_time) 
-            sensorValue.save()
-            sensorValue.create_sensorValueFile()
-
-
-    def create_sensorValueFile(self):
-        sensorValue_list= self.sensor.sensorvalue_set.filter(kind=self.kind)
-        sensorValue_count = len(sensorValue_list)
-        print(f"{self.kind}:{sensorValue_count}")
-        if sensorValue_count == 0: return
-        if sensorValue_count < Sensor.MAX_VALUE_NUM and (self.sensor.time.day == self.time.day): return
-
-        sensorValue_time_value_list =  sensorValue_list.order_by("time").values_list("time","value")
-        csv_data = StringIO()
-        csv_data.write(u'\ufeff')
-        writer = csv.writer(csv_data)
-        writer.writerow(["",'Time_[s]', "Acceleration[g]"])
+        sensor_data_list = [SensorValue(sensor=sensor, time=datetime.strptime(item['time'], '%Y-%m-%dT%H:%M:%S.%f'),value=item['value']) for item in data]
+        SensorValue.objects.bulk_create(sensor_data_list)
+        print("success")
+        # for i, kind in enumerate(sensor.getValueType()):
+        #     sensorValue = SensorValue(sensor=sensor,kind=kind,value=float(value_list[i]),time= now_time) 
+        #     sensorValue.save()
+        #     sensorValue.create_sensorValueFile()
         
-        for i, value in enumerate(sensorValue_time_value_list):
-            time = (value[0] - sensorValue_time_value_list[0][0]).seconds
-            writer.writerow([i,time,value[1]])
 
-        file_content = csv_data.getvalue().encode("utf-8")
-        sensorValueFile= SensorValueFile(sensor=self.sensor,valueKind=self.kind,time= sensorValue_time_value_list[0][0])
-        sensorValueFile.setfile(file_content)
-        sensorValueFile.save()
 
-        for sensorValue in sensorValue_list:
-            sensorValue.delete()
+    # def create_sensorValueFile(self):
+    #     sensorValue_list= self.sensor.sensorvalue_set.filter(kind=self.kind)
+    #     sensorValue_count = len(sensorValue_list)
+    #     print(f"{self.kind}:{sensorValue_count}")
+    #     if sensorValue_count == 0: return
+    #     if sensorValue_count < Sensor.MAX_VALUE_NUM and (self.sensor.time.day == self.time.day): return
+
+    #     sensorValue_time_value_list =  sensorValue_list.order_by("time").values_list("time","value")
+    #     csv_data = StringIO()
+    #     csv_data.write(u'\ufeff')
+    #     writer = csv.writer(csv_data)
+    #     writer.writerow(["",'Time_[s]', "Acceleration[g]"])
+        
+    #     for i, value in enumerate(sensorValue_time_value_list):
+    #         time = (value[0] - sensorValue_time_value_list[0][0]).seconds
+    #         writer.writerow([i,time,value[1]])
+
+    #     file_content = csv_data.getvalue().encode("utf-8")
+    #     sensorValueFile= SensorValueFile(sensor=self.sensor,valueKind=self.kind,time= sensorValue_time_value_list[0][0])
+    #     sensorValueFile.setfile(file_content)
+    #     sensorValueFile.save()
+
+    #     for sensorValue in sensorValue_list:
+    #         sensorValue.delete()
     
 
-class SensorValueFile(models.Model):
-    sensor =  models.ForeignKey(Sensor, on_delete=models.CASCADE)
-    valueKind = models.CharField(max_length=255)
-    time= models.DateTimeField()
-    file = models.FileField(upload_to="data/",max_length=200)
-    def setfile(self,file_content):
-            self.file.save(self.getFileName(),ContentFile(file_content))
-    def getFileName(self):
-        filename_sensor =  f'{self.sensor.location}_{self.sensor.subLocation}_{self.sensor.part}_{self.sensor.getKind()}_{self.sensor.index}'
-        filename_day = f'/{self.time.year:04}_{self.time.month:02}_{self.time.day:02}'
-        filename_time = f'{self.time.hour:02}_{self.time.minute:02}_{self.time.second:02}'
-        filename= f"{filename_sensor}/{filename_day}_raw_{self.valueKind}/{filename_day}-{filename_time}_timeraw_{self.valueKind.lower()}.csv"
-        return filename
+# class SensorValueFile(models.Model):
+#     sensor =  models.ForeignKey(Sensor, on_delete=models.CASCADE)
+#     valueKind = models.CharField(max_length=255)
+#     time= models.DateTimeField()
+#     file = models.FileField(upload_to="data/",max_length=200)
+#     def setfile(self,file_content):
+#             self.file.save(self.getFileName(),ContentFile(file_content))
+#     def getFileName(self):
+#         filename_sensor =  f'{self.sensor.location}_{self.sensor.subLocation}_{self.sensor.part}_{self.sensor.getKind()}_{self.sensor.index}'
+#         filename_day = f'/{self.time.year:04}_{self.time.month:02}_{self.time.day:02}'
+#         filename_time = f'{self.time.hour:02}_{self.time.minute:02}_{self.time.second:02}'
+#         filename= f"{filename_sensor}/{filename_day}_raw_{self.valueKind}/{filename_day}-{filename_time}_timeraw_{self.valueKind.lower()}.csv"
+#         return filename
 
 

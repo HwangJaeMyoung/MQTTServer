@@ -3,7 +3,7 @@ class SensorTopic:
     REGISTER = "Register"
     CONFIRM = "Confirm"
     NOTHING = "Nothing"
-    VALUE = "X"
+    VALUE = "Value"
     ICCMS  = "ICCMS"
 
     @staticmethod

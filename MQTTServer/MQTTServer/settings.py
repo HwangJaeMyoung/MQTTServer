@@ -76,21 +76,35 @@ WSGI_APPLICATION = "MQTTServer.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-import pymysql
-# pymysql.version_info = (1, 3, 13, "final", 0)
-pymysql.version_info = (1, 4, 3, "final", 0)
-pymysql.install_as_MySQLdb()
+# import pymysql
+# # pymysql.version_info = (1, 3, 13, "final", 0)
+# pymysql.version_info = (1, 4, 3, "final", 0)
+# pymysql.install_as_MySQLdb()
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": 'django.db.backends.mysql',
+#         'NAME': 'mqtt_server',
+#         'USER': 'DT_TUKOREA',
+#         'PASSWORD': 'DiK_WiMiS_30!',
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#         'OPTIONS': {
+#             'charset': 'utf8mb4',
+#         },
+#     }
+# }
 
 DATABASES = {
     "default": {
-        "ENGINE": 'django.db.backends.mysql',
+        "ENGINE": 'django.db.backends.postgresql',
         'NAME': 'mqtt_server',
-        'USER': 'DT_TUKOREA',
-        'PASSWORD': 'DiK_WiMiS_30!',
+        'USER': 'omyo',
+        'PASSWORD': '0329',
         'HOST': 'localhost',
-        'PORT': '3306',
+        'PORT': '5432',
         'OPTIONS': {
-            'charset': 'utf8mb4',
+            'options': '-c search_path=public',
         },
     }
 }

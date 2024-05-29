@@ -1,16 +1,16 @@
 from django.contrib import admin
-from .models import Sensor, SensorValue,SensorValueFile
-import csv
+from .models import Sensor , SensorValue #,SensorValueFile
+# import csv
 from django.http import HttpResponse
-import matplotlib
-matplotlib.use('Agg')  
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-import io
-from django.utils.safestring import mark_safe
-import numpy as np
-from io import BytesIO, StringIO
-import base64
+# import matplotlib
+# matplotlib.use('Agg')  
+# import matplotlib.pyplot as plt
+# import matplotlib.dates as mdates
+# import io
+# from django.utils.safestring import mark_safe
+# import numpy as np
+# from io import BytesIO, StringIO
+# import base64
 from .models import Sensor
 import zipfile
 
@@ -107,4 +107,4 @@ class SensorAdmin(admin.ModelAdmin):
 
 admin.site.register(Sensor,SensorAdmin)
 admin.site.register(SensorValue)
-admin.site.register(SensorValueFile)
+# admin.site.register(SensorValueFile)
