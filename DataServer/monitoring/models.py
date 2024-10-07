@@ -5,6 +5,8 @@ from datetime import datetime
 from enum import Enum
 import csv
 from io import StringIO 
+from PyP100 import PyP100
+
 
 class Sensor(models.Model):
     MAX_VALUE_NUM = 4096
@@ -133,63 +135,80 @@ class SensorValue(models.Model):
 #     for sensorValue in sensorValue_list:
 #         sensorValue.delete()
 
-
 class Location(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.name
-
-class SmartPlug(models.Model):
+    
+class Plug(models.Model):
     location = models.ForeignKey(Location)
     plug_name = models.CharField(max_length=100)
-    status = models.BooleanField(default=False)  # 0: OFF, 1: ON
-    plug_status = models.BooleanField(default=False)
-    ip_address = models.GenericIPAddressField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    def __str__(self):
-        return self.plug_name
-
-class Arduino(models.Model):
-    location = models.ForeignKey(Location)
-    smart_plug = models.ForeignKey(SmartPlug,on_delete=models.SET_NULL, null=True, blank=True)
-    arduino_name = models.CharField(max_length=100)
     status = models.BooleanField(default=False)
+    attention = models.BooleanField(default=False)
+    plug_status = models.BooleanField(default=False)
     ip_address = models.GenericIPAddressField(blank=True, null=True)
     model = models.CharField(max_length=50, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
-        return self.arduino_name
+        return self.plug_name
+    
+    def turn_off_plug(self):
+        email = "DT.TUKOREA@gmail.com"  
+        password = "DiK_WiMiS_30!"  
+        p100 = PyP100.P100(str(self.ip_address), email, password)
+        p100.handshake()  
+        p100.login() 
+        p100.turnOff()
+        self.plug_status = False
+        self.save()
 
- 
+    def turn_on_plug(self):
+        email = "DT.TUKOREA@gmail.com"  
+        password = "DiK_WiMiS_30!"  
+        p100 = PyP100.P100(str(self.ip_address), email, password)
+        p100.handshake()  
+        p100.login() 
+        p100.turnOn()
+        self.plug_status = True
+        self.save()
+
+
+class Device_type(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    wifi = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+
+class Device(models.Model):
+    location = models.ForeignKey(Location)
+    
+    plug = models.ForeignKey(Plug,on_delete=models.SET_NULL, null=True, blank=True)
+    parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='child')
+
+    device_name = models.CharField(max_length=100)
+    device_type= models.ForeignKey(Device_type,on_delete=models.SET_NULL, null=True, blank=True)
+
+    status = models.BooleanField(default=False)
+    
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+    model = models.CharField(max_length=50, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.device_name
+    
 class Sensor(models.Model):
-    class SensorType(Enum):
-        Vibration = 0
-        Temperature = 1
-        Humidity = 2
-        TemperatureHumidity = 3
-        Current = 4
-    SENSOR_TYPE_VALUES = {
-        "Vibration" :["X","Y","Z"],
-        "Temperature":["Temperature"],
-        "Humidity":["Humidity"],
-        "TemperatureHumidity":["Temperature","Humidity"],
-        "Current":["Current"]
-    }
-    SENSOR_TYPE_CHOICES = [
-    (SensorType.Vibration.value, 'Vibration'),
-    (SensorType.Temperature.value, 'Temperature'),
-    (SensorType.Humidity.value, 'Humidity'),
-    (SensorType.TemperatureHumidity.value, 'TemperatureHumidity'),
-    (SensorType.Current.value, 'Current'),]
+    AttachedDevice = models.ForeignKey(Device,on_delete=models.SET_NULL, null=True, blank=True)
+    CollectingDevice= models.ForeignKey(Device,on_delete=models.SET_NULL, null=True, blank=True)
 
-    location = models.CharField(max_length=255)
-    subLocation = models.CharField(max_length=255)
-    part = models.CharField(max_length=255)
+    sensor_name = models.CharField(max_length=100)
     kind = models.IntegerField(choices=SENSOR_TYPE_CHOICES)
-    index = models.IntegerField()
-    isOnline = models.BooleanField(default=False)
+    model = models.CharField(max_length=50, blank=True, null=True)
+    status = models.BooleanField(default=False)
     time = models.DateTimeField(null=True,blank=True)
 
     class interface:
@@ -211,19 +230,22 @@ class Sensor(models.Model):
         self.time = timezone.now()
         return self.time
 
-# class Sensor(models.Model):
-#     arduino = models.ForeignKey(Arduino, on_delete=models.CASCADE)
-#     sensor_name = models.CharField(max_length=100)
-#     sensor_type = models.CharField(max_length=50)
-
-#     def __str__(self):
-#         return self.sensor_name
-
-# class SensorData(models.Model):
-#     sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE)
-#     value = models.FloatField()
-#     timestamp = models.DateTimeField(auto_now_add=True)
-
-#     def __str__(self):
-#         return f"{self.sensor.sensor_name} - {self.value} at {self.timestamp}"
-
+def selectSensor(data:list):
+    try:
+        sensor_interface = Sensor.interface(data)
+        sensor = Sensor.objects.get(
+            location=sensor_interface[0],
+            subLocation=sensor_interface[1],
+            part=sensor_interface[2],
+            kind=sensor_interface[3],
+            index=sensor_interface[4]
+        )
+        return sensor
+    except Sensor.DoesNotExist:
+        print("error 1 : 존재하지 않는 센서")
+        print(f"topic:{data}")
+        return False
+    except :
+        print("error 0 : 예상치 못한 에러")
+        print(f"topic:{data}")
+        return False

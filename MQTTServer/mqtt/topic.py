@@ -1,11 +1,9 @@
-
 class SensorTopic:
     REGISTER = "Register"
     CONFIRM = "Confirm"
     NOTHING = "Nothing"
     VALUE = "Value"
     ICCMS  = "ICCMS"
-
     @staticmethod
     def init_from_sensor(sensor_name:str):
         sensor_data=sensor_name.split("/")
@@ -15,7 +13,6 @@ class SensorTopic:
 
     def __init__(self,topic:str) -> None:
         if topic == None:raise "null"
-
         self.__topic_per_level=topic.split("/")
         self.__topic = topic
 

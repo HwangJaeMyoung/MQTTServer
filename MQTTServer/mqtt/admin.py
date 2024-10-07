@@ -14,8 +14,6 @@ from django.http import HttpResponse
 from .models import Sensor
 import zipfile
 
-
-
 class SensorAdmin(admin.ModelAdmin):
     list_display = ("get_name","is_online")
     list_filter = ('location', 'subLocation','kind',)
