@@ -6,7 +6,7 @@ from enum import Enum
 import csv
 from io import StringIO 
 from PyP100 import PyP100
-
+from django.db.models import UniqueConstraint
 
 class Sensor(models.Model):
     MAX_VALUE_NUM = 4096
@@ -17,7 +17,7 @@ class Sensor(models.Model):
         TemperatureHumidity = 3
         Current = 4
     SENSOR_TYPE_VALUES = {
-        "Vibration" :["X","Y","Z"],
+        "Vibration" :["x","y","z"],
         "Temperature":["Temperature"],
         "Humidity":["Humidity"],
         "TemperatureHumidity":["Temperature","Humidity"],
@@ -36,7 +36,7 @@ class Sensor(models.Model):
     kind = models.IntegerField(choices=SENSOR_TYPE_CHOICES)
     index = models.IntegerField()
     isOnline = models.BooleanField(default=False)
-    time = models.DateTimeField(null=True,blank=True)
+    timestamp = models.DateTimeField(null=True,blank=True)
 
     class interface:
         def __init__(self,data:list) -> None:
@@ -47,15 +47,17 @@ class Sensor(models.Model):
     def getKind(self):
         return Sensor.SensorType(self.kind).name
     
-    def getValueType(self):
+    def getValueKind(self):
         return Sensor.SENSOR_TYPE_VALUES[self.getKind()]
 
     def getName(self):
         return f"{self.location}/{self.subLocation}/{self.part}/{self.getKind()}/{str(self.index)}"
+    def getFilename(self):
+        return f"{self.location}_{self.subLocation}_{self.part}_{self.getKind()}_{str(self.index)}"
 
     def setTime(self):
-        self.time = timezone.now()
-        return self.time
+        self.timestamp = timezone.now()
+        return self.timestamp
 
 def selectSensor(data:list):
     try:
@@ -78,16 +80,27 @@ def selectSensor(data:list):
         return False
 
 class SensorValue(models.Model):
-    sensor =  models.ForeignKey(Sensor, on_delete=models.CASCADE)
-    value = models.JSONField()
-    time= models.DateTimeField()
+    sensor =  models.ForeignKey(Sensor, on_delete=models.CASCADE,db_index=True)
+    kind = models.CharField(max_length=255)
+    value = models.IntegerField()
+    
+    timestamp= models.DateTimeField()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['sensor_id',"timestamp","kind"]),
+        ]
+        constraints = [
+            UniqueConstraint(fields=['sensor', 'timestamp', 'kind'], name='unique_sensor_timestamp'),
+        ]
     
     @staticmethod
     def create_sensorValue(sensor:Sensor,data:list):
+        sensor.setTime()
         sensor.save()
-        sensor_data_list = [SensorValue(sensor=sensor, time=datetime.strptime(item['time'], '%Y-%m-%dT%H:%M:%S.%f'),value=item['value']) for item in data]
-        SensorValue.objects.bulk_create(sensor_data_list)
-        print("success")
+        kinds = data[0]["value"].keys()
+        sensor_data_list = [SensorValue(sensor=sensor, timestamp=datetime.strptime(item['time'], '%Y_%m_%d-%H_%M_%S.%f'),value=item['value'][kind],kind=kind) for kind in kinds for item in data ]
+        SensorValue.objects.bulk_create(sensor_data_list,  ignore_conflicts=True)
 
         # for i, kind in enumerate(sensor.getValueType()):
         #     sensorValue = SensorValue(sensor=sensor,kind=kind,value=float(value_list[i]),time= now_time) 
@@ -142,39 +155,136 @@ class Location(models.Model):
     def __str__(self):
         return self.name
     
+class Plug_type(models.Model):
+    name = models.CharField(max_length=100)
+    model = models.CharField(max_length=100,null=True, blank=True)
+    admin_email = models.EmailField(max_length=100,default="DT.TUKOREA@gmail.com",null=True, blank=True) 
+    admin_passwd = models.CharField(max_length=100,default="DiK_WiMiS_30!", null=True, blank=True)
+
+    def login_admin(self,ip_address):
+        try:
+            if self.model == "p100":
+                p100 = PyP100.P100(str(ip_address), self.email, self.password)
+                p100.handshake()  
+                p100.login() 
+                return p100
+            else: return False
+        except:
+            return False 
+    def get_status(self,ip_address):
+        if self.login_admin(ip_address): return True
+        else: False
+    def turn_off_plug(self,ip_address):
+        try:
+            plug = self.login_admin(ip_address)
+            if not plug : return False
+        
+            if self.model == "p100":
+                plug.turnOff()
+                return True
+            else: return False
+        except:
+            return False
+
+    def turn_on_plug(self,ip_address):
+        try:
+            plug = self.login_admin(ip_address)
+            if not plug : return False
+        
+            if self.model == "p100":
+                plug.turnOn()
+                return True
+            else: return False
+        except:
+            return False
+        
+    def get_plug_status(self,ip_address):
+        try:
+            plug = self.login_admin(ip_address)
+            if not plug : return False
+            if self.model == "p100":
+                plug_status = plug.getDeviceInfo()["device_on"]
+                return plug_status
+            else: return False
+        except:
+            return False
+
 class Plug(models.Model):
-    location = models.ForeignKey(Location)
+    location = models.ForeignKey(Location, null=True, blank=True)
     plug_name = models.CharField(max_length=100)
-    status = models.BooleanField(default=False)
+    plug_type = plug = models.ForeignKey(Plug_type,on_delete=models.SET_NULL, null=True, blank=True)
+
     attention = models.BooleanField(default=False)
+    
+    
+    status = models.BooleanField(default=False)
+    target_state = models.BooleanField(default=False)
+
     plug_status = models.BooleanField(default=False)
+    target_plug_state = models.BooleanField(default=False)
+
     ip_address = models.GenericIPAddressField(blank=True, null=True)
-    model = models.CharField(max_length=50, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.plug_name
-    
-    def turn_off_plug(self):
-        email = "DT.TUKOREA@gmail.com"  
-        password = "DiK_WiMiS_30!"  
-        p100 = PyP100.P100(str(self.ip_address), email, password)
-        p100.handshake()  
-        p100.login() 
-        p100.turnOff()
-        self.plug_status = False
-        self.save()
-
+        
     def turn_on_plug(self):
-        email = "DT.TUKOREA@gmail.com"  
-        password = "DiK_WiMiS_30!"  
-        p100 = PyP100.P100(str(self.ip_address), email, password)
-        p100.handshake()  
-        p100.login() 
-        p100.turnOn()
-        self.plug_status = True
-        self.save()
+        try:
+            result = self.plug_type.turn_on_plug(self.ip_address)
+            if result:
+                self.plug_status = True
+                self.save()
+            return result
+        except:
+            return False
+        
+    def turn_off_plug(self):
+        try:
+            result = self.plug_type.turn_off_plug(self.ip_address)
+            if result:
+                self.plug_status = True
+                self.save()
+            return result
+        except:
+            return False
+    
+    def set_plug_status(self):
+        try:
+            plug_status = self.plug_type.get_plug_status(self.ip_address)
+            if self.plug_state != plug_status: 
+                self.plug_status = plug_status
+                self.save()
 
+            if self.plug_status != self.target_plug_state:
+                if self.target_plug_state:
+                    self.turn_on_plug()
+                else:
+                    self.turn_off_plug()
+            return True
+        except:
+            self.plug_status= False
+            self.save()
+            return False
+    
+    
+    def set_status(self):
+        try:
+            status = self.plug_type.get_status(self.ip_address)
+            if self.state != status: 
+                self.status = status
+                self.save()
+                
+            if self.plug_status != self.target_state:
+                if self.target_state:
+                    self.turn_on_plug()
+                else:
+                    self.turn_off_plug()
+            return True
+        except:
+            self.status= False
+            self.save()
+            return False
 
 class Device_type(models.Model):
     name = models.CharField(max_length=100)
@@ -200,7 +310,8 @@ class Device(models.Model):
 
     def __str__(self):
         return self.device_name
-    
+
+
 class Sensor(models.Model):
     AttachedDevice = models.ForeignKey(Device,on_delete=models.SET_NULL, null=True, blank=True)
     CollectingDevice= models.ForeignKey(Device,on_delete=models.SET_NULL, null=True, blank=True)
