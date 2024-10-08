@@ -4,6 +4,8 @@ MQTTServer/logs
 MQTTServer/run
 MQTTServer/media
 MQTTServer/django.log
+MQTTServer/mqtt/__pycache__
+MQTTServer/MQTTServer/__pycache__
 
 run/*
 
