@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sensor Data List</title>
+</head>
+<body>
+    <h1>Sensor Data List</h1>
+    <a href="{% url 'sensor_data_new' %}">Add new sensor data</a>
+    <ul>
+        {% for data in data %}
+            <li><a href="{% url 'sensor_data_detail' data.pk %}">{{ data.sensor_name }} at {{ data.timestamp }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

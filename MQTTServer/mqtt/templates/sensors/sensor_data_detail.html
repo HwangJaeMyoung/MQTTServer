@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sensor Data Detail</title>
+</head>
+<body>
+    <h1>{{ data.sensor_name }} at {{ data.timestamp }}</h1>
+    <p>Value: {{ data.value }}</p>
+    <a href="{% url 'sensor_data_edit' data.pk %}">Edit</a>
+    <form action="{% url 'sensor_data_delete' data.pk %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Delete</button>
+    </form>
+    <a href="{% url 'sensor_data_list' %}">Back to list</a>
+</body>
+</html>

@@ -15,16 +15,17 @@ class ServerClient(mqtt.Client):
     
     def on_connect(self,client, userdata, flags, rc):
         client.subscribe(REGISTER_TOPIC.__str__())
+
         for sensor in Sensor.objects.filter(isOnline = True):
             sensor_name = sensor.getName()
             onlinedTopic=SensorTopic.init_from_sensor(sensor_name)
             value_topic = onlinedTopic.value()
             client.subscribe(value_topic.__str__())
+            print(value_topic.__str__())
 
     def on_message(self, client, userdata, msg):
         receivedTopic = SensorTopic(msg.topic)
         sensor = Sensor.select(receivedTopic.separate()[0])
-        time1 = datetime.datetime.now()
         if sensor == False:return
         if receivedTopic.isRegister():
             if not sensor.isOnline:return
@@ -36,11 +37,7 @@ class ServerClient(mqtt.Client):
             return
         else:
             received_msg = json.loads(msg.payload.decode("utf-8"))
-            # received_value = received_msg.split("_")
-            # print(received_msg)
-            SensorValue.create_sensorValue(sensor,received_msg)
-            time2 = datetime.datetime.now()
-            print(time2-time1)
+            SensorValue.create_sensorValue(sensor,received_msg["data"])
             return
             
 if __name__ == "__main__":

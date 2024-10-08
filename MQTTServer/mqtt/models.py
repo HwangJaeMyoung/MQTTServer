@@ -5,6 +5,9 @@ from datetime import datetime
 from enum import Enum
 import csv
 from io import StringIO 
+from django.db.models import UniqueConstraint
+
+
 
 class Sensor(models.Model):
     MAX_VALUE_NUM = 4096
@@ -15,7 +18,7 @@ class Sensor(models.Model):
         TemperatureHumidity = 3
         Current = 4
     SENSOR_TYPE_VALUES = {
-        "Vibration" :["X","Y","Z"],
+        "Vibration" :["x","y","z"],
         "Temperature":["Temperature"],
         "Humidity":["Humidity"],
         "TemperatureHumidity":["Temperature","Humidity"],
@@ -34,7 +37,7 @@ class Sensor(models.Model):
     kind = models.IntegerField(choices=SENSOR_TYPE_CHOICES)
     index = models.IntegerField()
     isOnline = models.BooleanField(default=False)
-    time = models.DateTimeField(null=True,blank=True)
+    timestamp = models.DateTimeField(null=True,blank=True)
 
     class interface:
         def __init__(self,data:list) -> None:
@@ -67,38 +70,43 @@ class Sensor(models.Model):
     def getKind(self):
         return Sensor.SensorType(self.kind).name
     
-    def getValueType(self):
+    def getValueKind(self):
         return Sensor.SENSOR_TYPE_VALUES[self.getKind()]
 
     def getName(self):
         return f"{self.location}/{self.subLocation}/{self.part}/{self.getKind()}/{str(self.index)}"
+    def getFilename(self):
+        return f"{self.location}_{self.subLocation}_{self.part}_{self.getKind()}_{str(self.index)}"
 
     
     def setTime(self):
-        self.time = timezone.now()
-        return self.time
+        self.timestamp = timezone.now()
+        return self.timestamp
 
 
 class SensorValue(models.Model):
-    sensor =  models.ForeignKey(Sensor, on_delete=models.CASCADE)
-    # kind = models.CharField(max_length=255)
-    # value = models.FloatField(default=0)
-    value = models.JSONField()
-    time= models.DateTimeField()
+    sensor =  models.ForeignKey(Sensor, on_delete=models.CASCADE,db_index=True)
+    kind = models.CharField(max_length=255)
+    value = models.IntegerField()
+    
+    timestamp= models.DateTimeField()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['sensor_id',"timestamp","kind"]),
+        ]
+        constraints = [
+            UniqueConstraint(fields=['sensor', 'timestamp', 'kind'], name='unique_sensor_timestamp'),
+        ]
     
     @staticmethod
     def create_sensorValue(sensor:Sensor,data:list):
-        now_time = sensor.setTime()
+        sensor.setTime()
         sensor.save()
-        sensor_data_list = [SensorValue(sensor=sensor, time=datetime.strptime(item['time'], '%Y-%m-%dT%H:%M:%S.%f'),value=item['value']) for item in data]
-        SensorValue.objects.bulk_create(sensor_data_list)
-        print("success")
-        # for i, kind in enumerate(sensor.getValueType()):
-        #     sensorValue = SensorValue(sensor=sensor,kind=kind,value=float(value_list[i]),time= now_time) 
-        #     sensorValue.save()
-        #     sensorValue.create_sensorValueFile()
+        kinds = data[0]["value"].keys()
+        sensor_data_list = [SensorValue(sensor=sensor, timestamp=datetime.strptime(item['time'], '%Y_%m_%d-%H_%M_%S.%f'),value=item['value'][kind],kind=kind) for kind in kinds for item in data ]
+        SensorValue.objects.bulk_create(sensor_data_list,  ignore_conflicts=True)
         
-
 
     # def create_sensorValueFile(self):
     #     sensorValue_list= self.sensor.sensorvalue_set.filter(kind=self.kind)
