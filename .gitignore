@@ -6,13 +6,13 @@ MQTTServer/media
 MQTTServer/django.log
 MQTTServer/mqtt/__pycache__
 MQTTServer/MQTTServer/__pycache__
-MQTTServer\mqtt\migrations
-MQTTServer\app.log
-
-
-DataServer\DataServer\__pycache__
-DataServer\download\migrations
-DataServer\monitoring\migrations
-
+MQTTServer/mqtt/migrations
+MQTTServer/app.log
+DataServer/DataServer/__pycache__
+DataServer/download/migrations
+DataServer/download/__pycache__
+DataServer/monitoring/migrations
+DataServer/monitoring/__pycache__
+DataServer/logs/*
 run/*
 
