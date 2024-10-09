@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "monitoring"
 ]
 
 MIDDLEWARE = [
@@ -105,6 +106,48 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
         'LOCATION': 'redis://127.0.0.1:6379/1',
     }
+}
+
+import os
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'monitor_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/monitor.log'),  # 로그 파일 경로
+            'formatter': 'verbose',
+        },
+        'django_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/django.log'),  # 로그 파일 경로
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['django_file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'monitor': {  # 커스텀 로거
+            'handlers': ['monitor_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
 }
 
 # Password validation
