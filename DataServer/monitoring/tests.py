@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Location, Device,select_sensor,create_sensorValue,Sensor,Sensor_type
+from .models import Location, Device,select_sensor,Sensor_networking,Sensor,Sensor_type
 import json
 import time
 
@@ -36,6 +36,12 @@ class LocationModelTest(TestCase):
         sensor1.save()
         alist = ["Test Location1","Test Location2","Test Device2","Test Device1","Test Sensor1"]
         print(select_sensor(alist))
+        sensor= select_sensor(alist)
+        
+        if not sensor:return False
+        
+        Sensor_networking(sensor = sensor, topic = "aa")
+
 
 
         # fake_payload = json.dumps({

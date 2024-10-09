@@ -355,7 +355,6 @@ class Sensor_value(models.Model):
         ]
 
 
-
 def select(name:str):
     try:
         location = Location.objects.get(name=name)
@@ -377,7 +376,7 @@ def select_sensor(data:list):
     else:
         logger.warning(f"excute selectSensor() not sensor: {selected_object}")
         return False 
-    
+
 def create_sensorValue(sensor:Sensor,data:list):
     for item in data:
         key = item["value"].keys()
