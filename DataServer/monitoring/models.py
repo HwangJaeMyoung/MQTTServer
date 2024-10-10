@@ -336,8 +336,11 @@ class Sensor(models.Model):
         return self.name
     
 class Sensor_networking(models.Model):
-    sensor=models.ForeignKey(Sensor,on_delete=models.CASCADE)
+    sensor=models.ForeignKey(Sensor,on_delete=models.CASCAD, null=True, blank=True,)
     topic = models.CharField(max_length=100)
+    action_type = models.CharField(max_length=15, choices=[("Register", "Register"), ("Confirm", "Confirm"), ("Value", "Value"),("Other", "Other")])
+    direction = models.BooleanField(default=True)  # True: Received, False: Sent
+    status = models.BooleanField(default=False)
     timestamp = models.DateTimeField(null=True,blank=True)
 
 class Sensor_value(models.Model):
@@ -390,10 +393,10 @@ def create_sensorValue(sensor:Sensor,data:list):
     Sensor_value.objects.bulk_create(sensor_data_list,  ignore_conflicts=True)
     return True
 
-def select_sensor_from_network(topic:str):
+def select_network(topic:str):
     try:
         network = Sensor_networking.objects.get(topic = topic)
-        return network.sensor
+        return network
     except Sensor_networking.DoesNotExist:
         logger.warning(f"excute select_sensor_from_network() not exist sensor_network matched topic:{topic}")
         return False

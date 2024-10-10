@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 import json
-from .topic import REGISTER_TOPIC,SensorTopic
-from .models import select_sensor,SensorValue,Sensor, select_sensor_from_network
+from .topic import REGISTER_TOPIC,Sensor_topic
+from .models import select_sensor,SensorValue,Sensor, select_network,Sensor_networking
 import time
 import logging
 
@@ -24,25 +24,47 @@ class ServerClient(mqtt.Client):
 
     def on_message(self, client, userdata, msg):
         # topic: ICCMS/A/A/B/B/C
-        sensor = select_sensor_from_network(msg.topic)
+        network= select_network(msg.topic)
+        # 존재했던 토픽인지 확인-> 아니었다면 센서 찾고 찾았다면 토픽의 동작 확인하고 그것을 network에 추가하고 해당 토픽에 대한 기록 작성, 해당 토픽에 대한 시간 최신화
+        ## 부착된 센서에 대해서 일정시간 업데이트가 없는지 모니터링 필요 
+        # 센서의 어텐션 상태를 확인 
+        # 동작에 따른 동작 실시 
+        if not network:
+            receivedTopic = Sensor_topic(msg.topic)
+            sensor = select_sensor(receivedTopic.separate()[0])
+
+            if not sensor:
+                Sensor_networking.objects.create(topic= msg.topic,status=False,action_type = receivedTopic.action_type)
+                return 
+            elif not receivedTopic.action_type in receivedTopic.ACTION_TYPE:
+                Sensor_networking.objects.create(sensor =sensor, topic= msg.topic,status=False,action_type = receivedTopic.action_type)
+                return 
+            
+            network = Sensor_networking(sensor =sensor, topic= msg.topic,action_type = receivedTopic.action_type,status= True)
+            network.save()
         
-        receivedTopic = SensorTopic(msg.topic)
-        sensor = select_sensor_from_network(receivedTopic)
+        sensor = network.sensor
+        
+        if not sensor.attention: return False
+        if not sensor.AttachedDevice.attention: return False
+        if not sensor.CollectingDevice.attention: return False
 
+        if network.action_type == Sensor_topic.REGISTER:
+            try:
+                confirm_network = sensor.sensor_networking_set.get(action_type=Sensor_topic.REGISTER)
+                client.publish(confirm_network.topic)
+            except Sensor_networking.DoesNotExist:
+                confirm_topic= receivedTopic.confirm()
+                client.publish(confirm_topic.__str__())
 
-        sensor = select_sensor(receivedTopic.separate()[0])
-        if not sensor: return
-        if receivedTopic.isRegister():
-            if not sensor.isOnline:return
-            confirm_topic= receivedTopic.confirm()
-            client.publish(confirm_topic.__str__())
             value_topic = confirm_topic.value()
             client.subscribe(value_topic.__str__())
-            return
-        else:
+
+        elif network.action_type == Sensor_topic.VALUE:
             received_msg = json.loads(msg.payload.decode("utf-8"))
             SensorValue.create_sensorValue(sensor,received_msg["data"])
-            return
+        else:
+            return 
         
     def activate_maintenance(self):
         self.maintenance = True
@@ -72,7 +94,7 @@ def subscribe():
     mqtt_client.subscribe(REGISTER_TOPIC.__str__())
     for sensor in Sensor.objects.filter(isOnline = True):
         sensor_name = sensor.getName()
-        onlinedTopic=SensorTopic.init_from_sensor(sensor_name)
+        onlinedTopic=Sensor_topic.init_from_sensor(sensor_name)
         value_topic = onlinedTopic.value()
         mqtt_client.subscribe(value_topic.__str__())
 
