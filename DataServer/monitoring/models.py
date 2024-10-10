@@ -147,7 +147,7 @@ class Location(models.Model):
                 device =self.device_set.get(name=name)
                 return device
             except Device.DoesNotExist:
-                logger.warning(f"excute select() exist location or device matched name: {name}")
+                logger.warning(f"excute select() not exist location or device matched name: {name}")
                 return False
         
 class Plug_type(models.Model):
@@ -304,7 +304,7 @@ class Device(models.Model):
                 sensor =self.attached_sensors.get(name=name)
                 return sensor
             except Sensor.DoesNotExist:
-                logger.warning(f"excute select() exist  device or sensor matched name: {name}")
+                logger.warning(f"excute select() not exist  device or sensor matched name: {name}")
                 return False
 
 class Sensor_type(models.Model):
@@ -336,7 +336,7 @@ class Sensor(models.Model):
         return self.name
     
 class Sensor_networking(models.Model):
-    sensor=models.OneToOneField(Sensor,on_delete=models.CASCADE)
+    sensor=models.ForeignKey(Sensor,on_delete=models.CASCADE)
     topic = models.CharField(max_length=100)
     timestamp = models.DateTimeField(null=True,blank=True)
 
@@ -354,7 +354,6 @@ class Sensor_value(models.Model):
             UniqueConstraint(fields=['sensor', 'timestamp', 'value_type'], name='unique_sensor_timestamp'),
         ]
 
-
 def select(name:str):
     try:
         location = Location.objects.get(name=name)
@@ -364,7 +363,7 @@ def select(name:str):
             device = Device.objects.get(name=name)
             return device
         except Device.DoesNotExist:
-            logger.warning(f"excute select() exist location or device matched name: {name}")
+            logger.warning(f"excute select() not exist location or device matched name: {name}")
             return False
     
 def select_sensor(data:list):
@@ -390,3 +389,11 @@ def create_sensorValue(sensor:Sensor,data:list):
                                      value=item['value'][property],value_type = property) for property in properties  for item in data ]    
     Sensor_value.objects.bulk_create(sensor_data_list,  ignore_conflicts=True)
     return True
+
+def select_sensor_from_network(topic:str):
+    try:
+        network = Sensor_networking.objects.get(topic = topic)
+        return network.sensor
+    except Sensor_networking.DoesNotExist:
+        logger.warning(f"excute select_sensor_from_network() not exist sensor_network matched topic:{topic}")
+        return False

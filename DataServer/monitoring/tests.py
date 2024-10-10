@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .models import Location, Device,select_sensor,Sensor_networking,Sensor,Sensor_type
+from .models import Location, Device,select_sensor,Sensor_networking,Sensor,Sensor_type,select_sensor_from_network
 import json
 import time
 
@@ -36,11 +36,22 @@ class LocationModelTest(TestCase):
         sensor1.save()
         alist = ["Test Location1","Test Location2","Test Device2","Test Device1","Test Sensor1"]
         print(select_sensor(alist))
+        n=Sensor_networking(sensor = sensor, topic = "aa/aa/aa/aa/aa/aa")
+        n.save()
+        topic= "aa/aa/aa/aa/aa/aa"
+        a= time.time()
         sensor= select_sensor(alist)
+        b = time.time()
+        select_sensor_from_network(topic)
+        c = time.time()
+        print(b-a)
+        print(c-b)
+
         
-        if not sensor:return False
         
-        Sensor_networking(sensor = sensor, topic = "aa")
+
+        
+        
 
 
 
