@@ -8,6 +8,8 @@ from PyP100 import PyP100
 from django.db.models import UniqueConstraint
 import logging
 from .topic import Sensor_topic
+import requests
+
 
 logger = logging.getLogger("monitor")
 
@@ -157,8 +159,13 @@ class Device_type(models.Model):
 
     def get_status(self,ip_address):
         if self.model == "esp32":
-            pass
-        return True
+            try:
+                result= requests.get(f"http://{ip_address}",timeout=1)
+                if result.status_code == 200:
+                    result =True
+            except:
+                result = False
+        return result
 
 class Device(models.Model):
     location = models.ForeignKey(Location,on_delete=models.SET_NULL, null=True, blank=True)
@@ -245,35 +252,12 @@ class Sensor(models.Model):
     name = models.CharField(max_length=100)
     sensor_type = models.OneToOneField(Sensor_type,on_delete=models.SET_NULL,null=True, blank=True)
     attention = models.BooleanField(default=False)
-
+    
     class Meta:
         db_table = 'sensor'
 
     def __str__(self):
         return self.name
-    
-    def check_attention(self):
-        if self.attached_device != None and not self.attached_device.attention: return False
-        if self.collecting_device != None and not self.collecting_device.attention: return False
-        return self.attention
-    
-    def create_sensor_value(self,data:list):
-        for item in data:
-            key = item["value"].keys()
-            if list(key) !=self.sensor_type.properties:
-                logging.warning(f"excute create_sensorValue porperty not match {key}:{self.sensor_type.properties}")
-                return False
-        properties = self.sensor_type.properties
-        sensor_data_list = [Sensor_value(sensor=self,
-                                        device = self.attached_device,
-                                        timestamp=datetime.strptime(item['time'], '%Y_%m_%d-%H_%M_%S.%f'),
-                                        value=item['value'][property],value_type = property) for property in properties  for item in data ]
-        try:
-            Sensor_value.objects.bulk_create(sensor_data_list,  ignore_conflicts=True)
-            return True
-        except:
-            logging.warning(f"excute create_sensor_value bulk_create_error")
-            return False
 
 class Sensor_networking(models.Model):
     sensor=models.ForeignKey(Sensor,on_delete=models.CASCADE, null=True, blank=True,)
@@ -289,21 +273,6 @@ class Sensor_networking(models.Model):
 
     class Meta:
         db_table = 'sensor_networking'
-    
-    def run(self):
-        self.timestamp= timezone.now()
-        self.network_status = True
-        if self.status == False: return False
-        self.save()
-        return True
-    
-    def confirm(self):
-        return Sensor_topic(self.topic).confirm().__topic
-    
-    def set_network_status(self,status):
-        self.network_status= status
-        self.save()
-        return 
     
 class Sensor_value(models.Model):
     sensor =  models.ForeignKey(Sensor, on_delete=models.CASCADE,db_index=True)
@@ -341,42 +310,13 @@ class Sensor_value_file(models.Model):
         filename= f"{filename_sensor}/{filename_day}_raw_{self.value_type}/{filename_day}_timeraw_{self.value_type.lower()}.csv"
         return filename
 
-def select(name:str):
-    try:
-        location = Location.objects.get(name=name)
-        if not location.parent == None:return False
-        return location
-    except Location.DoesNotExist:
-        try:
-            device = Device.objects.get(name=name)
-            if not device.parent == None or not device.location == None:return False
-            return device
-        except Device.DoesNotExist:
-            logger.warning(f"excute select() not exist location or device matched name: {name}")
-            return False
-    
-def select_sensor(data:list):
-    selected_object = select(data[0])
-    if not selected_object:return False
-    for name in data[1:]:
-        selected_object = selected_object.select(name)
-        if not selected_object: return False
-    if isinstance(selected_object, Sensor):
-        return selected_object
-    else:
-        logger.warning(f"excute selectSensor() not sensor: {selected_object}")
-        return False 
+def create_sensor_value_file(sensor:Sensor,start_time,end_time):
 
-def select_network(topic:str):
-    try:
-        network = Sensor_networking.objects.get(topic = topic)
-        return network
-    except Sensor_networking.DoesNotExist:
-        logger.warning(f"excute select_network() not exist sensor_network matched topic:{topic}")
-        return False
-
-def create_sensor_value_file(sensor:Sensor):
     for properties in sensor.sensor_type.properties:
+        sensor_value_list = sensor.sensor_value_set.filter(
+            value_type=properties,
+            timestamp__range=(start_time, end_time)
+        )
         sensor_value_list= sensor.sensor_value_set.filter(value_type =properties)
         sensorValue_count = len(sensor_value_list)
         if sensorValue_count == 0: return
@@ -393,5 +333,4 @@ def create_sensor_value_file(sensor:Sensor):
         sensorValueFile.setfile(file_content)
         sensorValueFile.save()
 
-        for sensorValue in sensor_value_list:
-            sensorValue.delete()
+        sensor_value_list.delete()

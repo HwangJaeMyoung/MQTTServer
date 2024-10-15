@@ -14,7 +14,6 @@ class Location(models.Model):
     parent = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='child')
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
     class Meta:
         db_table = 'location'
 
@@ -76,11 +75,6 @@ class Device_type(models.Model):
     class Meta:
         db_table = 'device_type'
 
-    def get_status(self,ip_address):
-        if self.model == "esp32":
-            pass
-        return True
-
 class Device(models.Model):
     location = models.ForeignKey(Location,on_delete=models.SET_NULL, null=True, blank=True)
     
@@ -103,15 +97,6 @@ class Device(models.Model):
 
     def __str__(self):
         return self.name
-    
-    def set_status(self):
-        if self.device_type.wifi == False: return False
-        status = self.device_type.get_status(self.ip_address)
-        if self.state != status: 
-            self.status = status
-            self.save()
-        if self.target_state == True and self.status == False:return False
-        return True
 
     def select(self,name:str):
         try:

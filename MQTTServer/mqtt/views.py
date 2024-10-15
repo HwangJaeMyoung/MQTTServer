@@ -1,5 +1,6 @@
 from .models import Sensor,Sensor_value
 from django.shortcuts import render, get_object_or_404, redirect 
+from django.http import HttpResponse
 
 from .client import get_maintenance, end_maintenance, start_maintenance
 
@@ -41,3 +42,13 @@ def sensor_data_new(request):
 #     data = get_object_or_404(SensorData, pk=pk)
 #     data.delete()
 #     return redirect('sensor_data_list')
+
+
+
+def start_maintenance_view(request):
+    start_maintenance()
+    return HttpResponse("Success")
+
+def end_maintenance_view(request):
+    end_maintenance()
+    return HttpResponse("Success")
