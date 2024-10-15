@@ -1,0 +1,213 @@
+DEBUG 2024-10-14 14:38:59,045 client messsage arrive
+INFO 2024-10-14 14:55:15,683 client mqtt connect
+INFO 2024-10-14 14:55:18,177 client mqtt connect
+DEBUG 2024-10-14 14:55:23,262 client messsage arrive
+DEBUG 2024-10-14 14:55:23,262 client messsage arrive
+WARNING 2024-10-14 14:55:23,335 models excute select_network() not exist sensor_network matched topic:ICCMS/2Campus/SMTLINE/2/Vibration/1/Value
+WARNING 2024-10-14 14:55:23,336 models excute select_network() not exist sensor_network matched topic:ICCMS/2Campus/SMTLINE/2/Vibration/1/Value
+WARNING 2024-10-14 14:55:23,338 models excute select() not exist location or device matched name: 2Campus
+WARNING 2024-10-14 14:55:23,338 models excute set_network() sensor:False or sensor.attention is False
+WARNING 2024-10-14 14:55:23,340 models excute select() not exist location or device matched name: 2Campus
+WARNING 2024-10-14 14:55:23,340 models excute set_network() sensor:False or sensor.attention is False
+DEBUG 2024-10-14 14:55:40,842 client messsage arrive
+INFO 2024-10-14 15:00:49,397 client mqtt connect
+INFO 2024-10-14 15:03:17,493 client mqtt connect
+INFO 2024-10-14 15:09:38,365 client mqtt connect
+INFO 2024-10-14 15:09:41,080 client mqtt connect
+INFO 2024-10-14 15:09:51,682 client mqtt connect
+INFO 2024-10-14 15:09:54,139 client mqtt connect
+INFO 2024-10-14 15:17:21,438 client mqtt connect
+INFO 2024-10-14 15:17:48,363 client mqtt connect
+INFO 2024-10-14 15:18:30,127 client mqtt connect
+INFO 2024-10-14 15:19:31,424 client mqtt connect
+INFO 2024-10-14 15:21:03,874 client mqtt connect
+INFO 2024-10-14 15:21:21,483 client mqtt connect
+INFO 2024-10-14 15:21:43,101 client mqtt connect
+INFO 2024-10-14 15:21:50,067 client mqtt connect
+INFO 2024-10-14 15:23:22,878 client mqtt connect
+INFO 2024-10-14 15:24:32,031 client mqtt connect
+INFO 2024-10-14 15:24:39,025 client mqtt connect
+DEBUG 2024-10-14 15:25:05,150 client messsage arrive
+DEBUG 2024-10-14 15:25:05,150 client messsage arrive
+WARNING 2024-10-14 15:25:05,213 models excute select_network() not exist sensor_network matched topic:ICCMS/2Campus/SMTLINE/2/Vibration/1/Value
+WARNING 2024-10-14 15:25:05,219 models excute select() not exist location or device matched name: 2Campus
+WARNING 2024-10-14 15:25:05,219 models excute set_network() sensor:False or sensor.attention is False
+WARNING 2024-10-14 15:25:05,219 models excute set_network() sensor:False or sensor.attention is False
+DEBUG 2024-10-14 15:25:16,999 client messsage arrive
+DEBUG 2024-10-14 15:25:20,883 client messsage arrive
+DEBUG 2024-10-14 15:25:24,669 client messsage arrive
+INFO 2024-10-14 15:30:06,257 client mqtt connect
+INFO 2024-10-14 15:30:13,163 client mqtt connect
+INFO 2024-10-14 15:30:22,276 client mqtt connect
+INFO 2024-10-14 15:30:57,763 client mqtt connect
+INFO 2024-10-14 15:31:01,629 client mqtt connect
+INFO 2024-10-14 15:31:38,108 client mqtt connect
+INFO 2024-10-14 15:32:20,398 client mqtt connect
+INFO 2024-10-14 15:32:45,261 client mqtt connect
+INFO 2024-10-14 15:32:54,285 client mqtt connect
+INFO 2024-10-14 15:33:38,895 client mqtt connect
+INFO 2024-10-14 15:34:02,296 client mqtt connect
+INFO 2024-10-14 15:34:17,171 client mqtt connect
+INFO 2024-10-14 15:34:23,050 client mqtt connect
+DEBUG 2024-10-14 15:34:32,431 client messsage arrive
+DEBUG 2024-10-14 15:34:35,131 client messsage arrive
+DEBUG 2024-10-14 15:34:37,461 client messsage arrive
+DEBUG 2024-10-14 15:34:39,587 client messsage arrive
+DEBUG 2024-10-14 15:34:41,761 client messsage arrive
+DEBUG 2024-10-14 15:34:44,014 client messsage arrive
+INFO 2024-10-14 15:37:08,894 client mqtt connect
+INFO 2024-10-14 15:37:50,144 client mqtt connect
+INFO 2024-10-14 15:37:54,005 client mqtt connect
+DEBUG 2024-10-14 15:37:58,642 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/Vibration/1/Value
+DEBUG 2024-10-14 15:38:59,598 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/Vibration/1/Value
+WARNING 2024-10-14 15:38:59,599 models excute select_network() not exist sensor_network matched topic:ICCMS/2Campus/SMTLINE/2/Vibration/1/Value
+WARNING 2024-10-14 15:38:59,602 models excute select() not exist location or device matched name: 2Campus
+WARNING 2024-10-14 15:38:59,602 models excute set_network() sensor:False or sensor.attention is False
+DEBUG 2024-10-14 15:39:02,242 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/Vibration/1/Value
+DEBUG 2024-10-14 15:39:04,888 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/Vibration/1/Value
+INFO 2024-10-14 15:40:33,615 client mqtt connect
+INFO 2024-10-14 15:40:41,459 client mqtt connect
+INFO 2024-10-14 15:41:39,558 client mqtt connect
+INFO 2024-10-14 15:42:00,067 client mqtt connect
+INFO 2024-10-14 15:43:36,952 client mqtt connect
+INFO 2024-10-14 15:43:51,507 client mqtt connect
+INFO 2024-10-14 15:43:57,408 client mqtt connect
+INFO 2024-10-14 15:44:04,342 client mqtt connect
+INFO 2024-10-14 15:44:12,337 client mqtt connect
+INFO 2024-10-14 15:48:04,690 client mqtt connect
+INFO 2024-10-14 15:48:08,506 client mqtt connect
+INFO 2024-10-14 15:51:14,398 client mqtt connect
+INFO 2024-10-14 15:52:56,754 client mqtt connect
+INFO 2024-10-14 15:53:00,594 client mqtt connect
+INFO 2024-10-14 15:53:18,365 client mqtt connect
+INFO 2024-10-14 15:53:27,589 client mqtt connect
+DEBUG 2024-10-14 15:53:50,023 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+WARNING 2024-10-14 15:53:50,094 models excute select_network() not exist sensor_network matched topic:ICCMS/2Campus/SMTLINE/2/1/Value
+WARNING 2024-10-14 15:53:50,103 models excute set_network() not regeisted network
+DEBUG 2024-10-14 15:53:50,114 client messsage status is False topic:ICCMS/2Campus/SMTLINE/2/1/Value
+INFO 2024-10-14 15:59:20,454 client mqtt connect
+INFO 2024-10-14 16:00:24,545 client mqtt connect
+INFO 2024-10-14 16:00:52,769 client mqtt connect
+DEBUG 2024-10-14 16:01:14,003 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 16:01:14,066 client messsage status is False topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 16:01:31,737 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Regeister
+WARNING 2024-10-14 16:01:31,738 models excute select_network() not exist sensor_network matched topic:ICCMS/2Campus/SMTLINE/2/1/Regeister
+INFO 2024-10-14 16:02:50,921 client mqtt connect
+INFO 2024-10-14 16:04:23,518 client mqtt connect
+INFO 2024-10-14 16:04:35,570 client mqtt connect
+DEBUG 2024-10-14 16:04:46,802 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Regeister
+WARNING 2024-10-14 16:04:46,838 models excute select_network() not exist sensor_network matched topic:ICCMS/2Campus/SMTLINE/2/1/Regeister
+INFO 2024-10-14 16:05:39,828 client mqtt connect
+DEBUG 2024-10-14 16:06:19,383 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Regeister
+WARNING 2024-10-14 16:06:19,421 models excute select_network() not exist sensor_network matched topic:ICCMS/2Campus/SMTLINE/2/1/Regeister
+INFO 2024-10-14 16:06:43,090 client mqtt connect
+INFO 2024-10-14 16:07:05,613 client mqtt connect
+INFO 2024-10-14 16:10:12,634 client mqtt connect
+DEBUG 2024-10-14 16:10:28,954 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Regeister
+WARNING 2024-10-14 16:10:28,992 models excute select_network() not exist sensor_network matched topic:ICCMS/2Campus/SMTLINE/2/1/Regeister
+WARNING 2024-10-14 16:10:28,992 models excute set_network() wrong topic_object.is_action_type:Regeister
+DEBUG 2024-10-14 16:10:28,996 client messsage status is False topic:ICCMS/2Campus/SMTLINE/2/1/Regeister
+DEBUG 2024-10-14 16:11:00,363 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Register
+WARNING 2024-10-14 16:11:00,364 models excute select_network() not exist sensor_network matched topic:ICCMS/2Campus/SMTLINE/2/1/Register
+DEBUG 2024-10-14 16:11:00,374 models excute set_network() Register
+DEBUG 2024-10-14 16:11:00,381 models excute set_network() Register success
+INFO 2024-10-14 16:13:42,526 client mqtt connect
+INFO 2024-10-14 16:13:59,712 client mqtt connect
+INFO 2024-10-14 16:14:28,341 client mqtt connect
+DEBUG 2024-10-14 16:15:23,041 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+WARNING 2024-10-14 16:15:23,080 models excute select_network() not exist sensor_network matched topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 16:15:23,088 models excute set_network() Register
+WARNING 2024-10-14 16:15:23,088 models excute set_network() not regeisted network
+DEBUG 2024-10-14 16:15:23,089 client messsage status is False topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 16:15:43,058 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Register
+WARNING 2024-10-14 16:15:43,063 models excute select_network() not exist sensor_network matched topic:ICCMS/2Campus/SMTLINE/2/1/Register
+DEBUG 2024-10-14 16:15:43,093 models excute set_network() Register
+ERROR 2024-10-14 16:15:43,124 models excute set_network() error: 오류:  중복된 키 값이 "sensor_networking_topic_43468969_pk" 고유 제약 조건을 위반함
+DETAIL:  (topic)=(ICCMS/2Campus/SMTLINE/2/1/Value) 키가 이미 있습니다.
+
+DEBUG 2024-10-14 16:15:43,129 client messsage status is False topic:ICCMS/2Campus/SMTLINE/2/1/Register
+INFO 2024-10-14 16:17:45,891 client mqtt connect
+DEBUG 2024-10-14 16:18:20,343 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Register
+WARNING 2024-10-14 16:18:20,408 models excute select_network() not exist sensor_network matched topic:ICCMS/2Campus/SMTLINE/2/1/Register
+DEBUG 2024-10-14 16:18:20,415 models excute set_network() Register
+ERROR 2024-10-14 16:18:20,422 models excute set_network() error: 오류:  중복된 키 값이 "sensor_networking_topic_43468969_pk" 고유 제약 조건을 위반함
+DETAIL:  (topic)=(ICCMS/2Campus/SMTLINE/2/1/Value) 키가 이미 있습니다.
+
+DEBUG 2024-10-14 16:18:20,424 client messsage status is False topic:ICCMS/2Campus/SMTLINE/2/1/Register
+INFO 2024-10-14 16:18:59,117 client mqtt connect
+INFO 2024-10-14 16:22:13,006 client mqtt connect
+INFO 2024-10-14 16:22:42,649 client mqtt connect
+INFO 2024-10-14 16:23:05,014 client mqtt connect
+INFO 2024-10-14 16:23:10,964 client mqtt connect
+INFO 2024-10-14 16:25:14,990 client mqtt connect
+INFO 2024-10-14 16:25:20,863 client mqtt connect
+INFO 2024-10-14 16:25:27,783 client mqtt connect
+INFO 2024-10-14 16:26:00,520 client mqtt connect
+INFO 2024-10-14 16:27:16,953 client mqtt connect
+INFO 2024-10-14 16:27:56,350 client mqtt connect
+INFO 2024-10-14 16:28:03,242 client mqtt connect
+INFO 2024-10-14 16:28:36,605 client mqtt connect
+INFO 2024-10-14 16:29:00,152 client mqtt connect
+INFO 2024-10-14 16:29:06,995 client mqtt connect
+DEBUG 2024-10-14 16:29:42,783 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Register
+WARNING 2024-10-14 16:29:42,851 models excute select_network() not exist sensor_network matched topic:ICCMS/2Campus/SMTLINE/2/1/Register
+DEBUG 2024-10-14 16:29:42,860 models excute set_network() Register
+INFO 2024-10-14 16:30:10,797 client mqtt connect
+INFO 2024-10-14 16:30:16,623 client mqtt connect
+INFO 2024-10-14 16:30:42,207 client mqtt connect
+DEBUG 2024-10-14 16:30:48,242 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Register
+WARNING 2024-10-14 16:30:48,318 models excute select_network() not exist sensor_network matched topic:ICCMS/2Campus/SMTLINE/2/1/Register
+DEBUG 2024-10-14 16:30:48,328 models excute set_network() Register
+DEBUG 2024-10-14 16:30:48,334 models excute set_network() Register success
+DEBUG 2024-10-14 16:30:48,336 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Confirm
+DEBUG 2024-10-14 16:35:05,076 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+INFO 2024-10-14 16:37:14,869 client mqtt connect
+INFO 2024-10-14 16:37:17,365 client mqtt connect
+DEBUG 2024-10-14 16:37:21,920 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 16:37:21,920 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+INFO 2024-10-14 16:38:46,873 client mqtt connect
+INFO 2024-10-14 16:38:49,361 client mqtt connect
+DEBUG 2024-10-14 16:38:52,404 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 16:38:52,404 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 16:38:58,259 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 16:38:58,259 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 16:39:06,159 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 16:39:06,159 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+INFO 2024-10-14 16:39:22,187 client mqtt connect
+INFO 2024-10-14 16:39:27,085 client mqtt connect
+INFO 2024-10-14 16:40:27,022 client mqtt connect
+INFO 2024-10-14 16:40:30,785 client mqtt connect
+INFO 2024-10-14 16:40:39,772 client mqtt connect
+INFO 2024-10-14 16:41:04,207 client mqtt connect
+INFO 2024-10-14 16:41:16,203 client mqtt connect
+INFO 2024-10-14 16:41:21,013 client mqtt connect
+DEBUG 2024-10-14 16:41:36,317 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 16:41:36,317 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 17:41:26,807 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 17:41:26,807 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+INFO 2024-10-14 18:37:18,365 client mqtt connect
+DEBUG 2024-10-14 18:41:35,693 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 18:41:35,693 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 18:41:38,971 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 18:41:38,971 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 18:41:41,743 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 18:41:41,744 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 18:41:59,584 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 18:41:59,584 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 18:42:02,165 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 18:42:02,165 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 18:42:04,619 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 18:42:04,619 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 18:42:30,112 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-14 18:42:30,112 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+INFO 2024-10-14 19:11:00,050 client mqtt connect
+INFO 2024-10-14 19:12:33,213 client mqtt connect
+INFO 2024-10-14 19:16:51,270 client mqtt connect
+INFO 2024-10-14 19:17:52,945 client mqtt connect
+INFO 2024-10-14 19:18:22,415 client mqtt connect
+INFO 2024-10-14 19:18:31,505 client mqtt connect
+INFO 2024-10-14 19:18:39,370 client mqtt connect
+INFO 2024-10-14 19:19:42,865 client mqtt connect
+INFO 2024-10-14 19:27:46,052 client mqtt connect
+INFO 2024-10-14 19:28:24,071 client mqtt connect
+INFO 2024-10-14 19:32:56,947 client mqtt connect

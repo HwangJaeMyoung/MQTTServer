@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from monitoring import views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("aa/", views.sensor_create_file, name='sensor_data_new'),
 ]

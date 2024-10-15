@@ -1,42 +1,48 @@
 import paho.mqtt.client as mqtt
 import json
-from .topic import REGISTER_TOPIC,SensorTopic
-from .models import selectSensor,SensorValue,Sensor
+from .topic import Sensor_topic
+from .models import set_network
 import time
 import logging
 
-logging.basicConfig(filename='app.log',level=logging.DEBUG)
+logger = logging.getLogger("mqtt")
 
-# 서버의 클라이언트 클래스
 class ServerClient(mqtt.Client):
+    BASE_TOPIC = "ICCMS/#"
     def __init__(self, callback_api_version: mqtt.CallbackAPIVersion = mqtt.CallbackAPIVersion.VERSION1, client_id: str | None = "", clean_session: bool | None = None, userdata: mqtt.Any = None, protocol: mqtt.MQTTProtocolVersion = mqtt.MQTTv311, transport: str = "tcp", reconnect_on_failure: bool = True, manual_ack: bool = False) -> None:
         super().__init__(callback_api_version, client_id, clean_session, userdata, protocol, transport, reconnect_on_failure, manual_ack)
         self.maintenance = False
 
     def on_connect(self,client, userdata, flags, rc):
+        logger.info(f"mqtt connect")
         subscribe()
 
     def on_disconnect(self, client, userdata, v1_rc):
+        logger.info(f"mqtt disconnect")
         if self.maintenance: return
         print(f"DisConnect. Reconnect in 5 seconds...")
         time.sleep(5)
         connect_mqtt()
 
     def on_message(self, client, userdata, msg):
-        receivedTopic = SensorTopic(msg.topic)
-        sensor = selectSensor(receivedTopic.separate()[0])
-        if not sensor: return
-        if receivedTopic.isRegister():
-            if not sensor.isOnline:return
-            confirm_topic= receivedTopic.confirm()
-            client.publish(confirm_topic.__str__())
-            value_topic = confirm_topic.value()
-            client.subscribe(value_topic.__str__())
-            return
-        else:
+        logger.debug(f"messsage arrive topic:{msg.topic}")
+        network = set_network(msg.topic)
+        if not network.run():
+            logger.debug(f"messsage status is False topic:{msg.topic}")
+            return False  
+        if network.action_type == Sensor_topic.REGISTER:
+            network.set_network_status(True)
+            client.publish(network.confirm())
+        elif network.action_type == Sensor_topic.CONFIRM: 
+            network.set_network_status(True)
+
+        elif network.action_type == Sensor_topic.VALUE:
             received_msg = json.loads(msg.payload.decode("utf-8"))
-            SensorValue.create_sensorValue(sensor,received_msg["data"])
-            return
+            received_data = received_msg["data"]
+            result = network.sensor.create_sensor_value(received_data)
+            network.set_network_status(result)
+        else:
+            logger.warning(f"sensor_networking_action_type is not defined {msg.topic}")
         
     def activate_maintenance(self):
         self.maintenance = True
@@ -63,25 +69,18 @@ def loop_mqtt():
     mqtt_client.loop_start()
 
 def subscribe():
-    mqtt_client.subscribe(REGISTER_TOPIC.__str__())
-    for sensor in Sensor.objects.filter(isOnline = True):
-        sensor_name = sensor.getName()
-        onlinedTopic=SensorTopic.init_from_sensor(sensor_name)
-        value_topic = onlinedTopic.value()
-        mqtt_client.subscribe(value_topic.__str__())
+    mqtt_client.subscribe(ServerClient.BASE_TOPIC)
 
 def start_maintenance():
     mqtt_client.activate_maintenance()
     mqtt_client.disconnect()
 
-
 def end_maintenance():
     connect_mqtt()
     loop_mqtt()
+
+def get_maintenance():
+    return mqtt_client.maintenance
     
-
-
-
-
 
 

@@ -160,3 +160,34 @@ MEDIA_ROOT = os.path.join(BASE_DIR,"media")
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'mqtt_file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR.parent, 'logs/mqtt.log'),  # 로그 파일 경로
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'mqtt': {  # 커스텀 로거
+            'handlers': ['mqtt_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}

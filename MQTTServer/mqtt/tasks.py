@@ -1,6 +1,6 @@
 from datetime import datetime
 from .client import start_maintenance, end_maintenance
-from .models import SensorValue
+from .models import Sensor_value
 
 def scheduled_task():
     start_maintenance()

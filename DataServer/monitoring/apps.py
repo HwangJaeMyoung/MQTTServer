@@ -6,7 +6,7 @@ class MonitoringConfig(AppConfig):
     name = "monitoring"
     
     def ready(self) -> None:
-        from .task import check_plug
+        from .tasks import check_plug
         # scheduler = BackgroundScheduler()
         # scheduler.add_job(check_plug, 'cron', second='*/1')
         # scheduler.start()

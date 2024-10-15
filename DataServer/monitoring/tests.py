@@ -1,7 +1,8 @@
 from django.test import TestCase
-from .models import Location, Device,select_sensor,Sensor_networking,Sensor,Sensor_type,select_sensor_from_network
+from .models import Location, Device,Sensor,Sensor_type,set_network,select,Sensor_value,Sensor_value_file, create_sensorValueFile
 import json
 import time
+from .client import connect_mqtt,loop_mqtt
 
 # Create your tests here.
 
@@ -11,8 +12,8 @@ class LocationModelTest(TestCase):
         Location.objects.create(name="Test Location1")
         Location.objects.create(name="Test Location2")
         Device.objects.create(name="Test Device1")
-        Device.objects.create(name="Test Device2")
-        Sensor.objects.create(name="Test Sensor1")
+        Device.objects.create(name="Test Device2",attention= True)
+        Sensor.objects.create(name="Test Sensor1",attention= True)
         Sensor_type.objects.create(name="Vibration")
         
 
@@ -32,39 +33,41 @@ class LocationModelTest(TestCase):
         location2.parent = location
         location2.save()
         sensor1.sensor_type=sensor_type1
-        sensor1.AttachedDevice = device1
+        sensor1.attached_device = device1
         sensor1.save()
         alist = ["Test Location1","Test Location2","Test Device2","Test Device1","Test Sensor1"]
-        print(select_sensor(alist))
-        n=Sensor_networking(sensor = sensor, topic = "aa/aa/aa/aa/aa/aa")
-        n.save()
-        topic= "aa/aa/aa/aa/aa/aa"
-        a= time.time()
-        sensor= select_sensor(alist)
-        b = time.time()
-        select_sensor_from_network(topic)
-        c = time.time()
-        print(b-a)
-        print(c-b)
+        print(select("Test Device2"))
+        # print(sensor)
+        # connect_mqtt()
+        # loop_mqtt()
+        network = set_network("ICCMS/Test Location1/Test Location2/Test Device2/Test Device1/Test Sensor1/Register")
+        print(network.run())
+        print(device1.get_locations())
 
-        
-        
+        fake_payload = json.dumps({
+            "data": [{
+                "time": "2000_5_1-1_1_1.122",
+                "value":{"x":0,"y":1,"z":1}
+            }
+            ,{
+                "time": "2000_5_1-1_1_2.122",
+                "value":{"x":0,"y":1,"z":1}
+            },
+            {
+                "time": "2000_5_1-1_1_3.122",
+                "value":{"x":0,"y":1,"z":1}
+            }
+            ]
+        }).encode("utf-8")
+        received_msg = json.loads(fake_payload.decode("utf-8"))
+        result = network.sensor.create_sensor_value(received_msg["data"])
+        print(result)
+        # print(network.sensor.sensor_value_set.all())
+        print(Sensor_value.objects.all())
+        create_sensorValueFile(network.sensor)
+        print(Sensor_value.objects.all())
+        # network.set_network_status(result)
 
-        
-        
-
-
-
-        # fake_payload = json.dumps({
-        #     "data": [{
-        #         "time": "1999_1_1-1_1_1.1",
-        #         "value":{"x":0,"y":1,"z":1}
-        #     } for x in range(100)]
-        # }).encode("utf-8")
-        # received_msg = json.loads(fake_payload.decode("utf-8"))
-        # print(received_msg["data"])
-        
-        
-        # result = create_sensorValue(sensor1, received_msg["data"])        
+        # result = sensor.create_sensor_value(received_msg["data"])        
 
         # self.assertEqual(location.name, "Test Location")
