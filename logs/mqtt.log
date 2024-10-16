@@ -211,3 +211,110 @@ INFO 2024-10-14 19:19:42,865 client mqtt connect
 INFO 2024-10-14 19:27:46,052 client mqtt connect
 INFO 2024-10-14 19:28:24,071 client mqtt connect
 INFO 2024-10-14 19:32:56,947 client mqtt connect
+INFO 2024-10-16 15:22:35,924 client mqtt connect
+INFO 2024-10-16 15:22:38,438 client mqtt connect
+INFO 2024-10-16 15:55:31,460 client mqtt connect
+INFO 2024-10-16 15:55:33,930 client mqtt connect
+INFO 2024-10-16 15:56:23,623 client mqtt disconnect
+INFO 2024-10-16 15:57:27,559 client mqtt connect
+INFO 2024-10-16 15:57:52,891 client mqtt connect
+INFO 2024-10-16 15:58:07,756 client mqtt connect
+INFO 2024-10-16 15:58:28,505 client mqtt disconnect
+INFO 2024-10-16 16:02:08,072 client mqtt connect
+INFO 2024-10-16 16:02:10,611 client mqtt connect
+INFO 2024-10-16 16:02:30,118 client mqtt disconnect
+INFO 2024-10-16 16:03:33,830 client mqtt connect
+INFO 2024-10-16 16:03:48,043 client mqtt connect
+INFO 2024-10-16 16:05:04,227 client mqtt disconnect
+INFO 2024-10-16 16:07:20,863 client mqtt connect
+INFO 2024-10-16 16:07:25,695 client mqtt connect
+DEBUG 2024-10-16 16:07:45,249 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-16 16:07:45,249 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-16 16:08:02,173 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-16 16:08:02,173 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+INFO 2024-10-16 16:08:29,905 client mqtt connect
+INFO 2024-10-16 16:08:29,906 client mqtt disconnect
+INFO 2024-10-16 16:08:40,016 client mqtt connect
+INFO 2024-10-16 16:09:04,522 client mqtt connect
+INFO 2024-10-16 16:09:10,132 client mqtt connect
+INFO 2024-10-16 16:09:10,135 client mqtt disconnect
+INFO 2024-10-16 16:09:20,253 client mqtt connect
+DEBUG 2024-10-16 16:09:41,178 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-16 16:09:41,178 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-16 16:10:03,546 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-16 16:10:03,546 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+INFO 2024-10-16 16:10:18,197 client mqtt disconnect
+DEBUG 2024-10-16 16:10:46,042 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-16 16:10:50,922 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+DEBUG 2024-10-16 16:11:16,121 client messsage arrive topic:ICCMS/2Campus/SMTLINE/2/1/Value
+INFO 2024-10-16 16:11:52,885 client mqtt connect
+INFO 2024-10-16 16:11:58,393 client mqtt disconnect
+INFO 2024-10-16 16:13:06,912 client mqtt connect
+INFO 2024-10-16 16:13:34,720 client mqtt connect
+INFO 2024-10-16 16:13:38,556 client mqtt connect
+INFO 2024-10-16 16:13:49,963 client mqtt connect
+INFO 2024-10-16 16:14:05,173 client mqtt connect
+INFO 2024-10-16 16:14:12,604 client mqtt connect
+INFO 2024-10-16 16:14:12,605 client mqtt disconnect
+INFO 2024-10-16 16:14:22,676 client mqtt connect
+INFO 2024-10-16 16:14:31,966 client mqtt disconnect
+INFO 2024-10-16 16:15:59,645 client mqtt connect
+INFO 2024-10-16 16:16:21,990 client mqtt connect
+INFO 2024-10-16 16:16:29,972 client mqtt connect
+INFO 2024-10-16 16:16:46,290 client mqtt connect
+INFO 2024-10-16 16:16:51,114 client mqtt connect
+INFO 2024-10-16 16:16:57,007 client mqtt connect
+INFO 2024-10-16 16:17:54,354 client mqtt connect
+INFO 2024-10-16 16:18:22,711 client mqtt disconnect
+INFO 2024-10-16 16:20:13,550 client mqtt connect
+INFO 2024-10-16 16:20:54,259 client mqtt connect
+INFO 2024-10-16 16:21:35,698 client mqtt connect
+INFO 2024-10-16 16:21:41,606 client mqtt connect
+INFO 2024-10-16 16:21:53,999 client mqtt connect
+INFO 2024-10-16 16:22:05,394 client mqtt connect
+INFO 2024-10-16 16:22:08,656 client mqtt disconnect
+INFO 2024-10-16 16:23:04,766 client mqtt connect
+INFO 2024-10-16 16:23:09,588 client mqtt connect
+INFO 2024-10-16 16:23:22,632 client mqtt disconnect
+INFO 2024-10-16 16:24:16,615 client mqtt connect
+INFO 2024-10-16 16:24:17,937 client mqtt disconnect
+INFO 2024-10-16 16:24:39,291 client mqtt connect
+INFO 2024-10-16 16:24:49,598 client mqtt connect
+INFO 2024-10-16 16:24:54,533 client mqtt connect
+INFO 2024-10-16 16:25:00,482 client mqtt connect
+INFO 2024-10-16 16:25:32,208 client mqtt disconnect
+INFO 2024-10-16 16:25:47,470 client mqtt connect
+INFO 2024-10-16 16:25:55,508 client mqtt connect
+INFO 2024-10-16 16:26:01,994 client mqtt disconnect
+INFO 2024-10-16 16:26:28,946 client mqtt connect
+INFO 2024-10-16 16:26:40,979 client mqtt disconnect
+INFO 2024-10-16 16:27:19,006 client mqtt connect
+INFO 2024-10-16 16:27:32,223 client mqtt disconnect
+INFO 2024-10-16 16:29:29,899 client mqtt connect
+INFO 2024-10-16 16:29:46,183 client mqtt disconnect
+INFO 2024-10-16 16:30:55,762 client mqtt connect
+INFO 2024-10-16 16:31:04,859 client mqtt connect
+INFO 2024-10-16 16:31:10,921 client mqtt connect
+INFO 2024-10-16 16:31:35,642 client mqtt disconnect
+INFO 2024-10-16 16:31:55,703 client mqtt connect
+INFO 2024-10-16 16:32:00,121 client mqtt disconnect
+INFO 2024-10-16 16:32:53,044 client mqtt connect
+INFO 2024-10-16 16:33:03,040 client mqtt connect
+INFO 2024-10-16 16:33:28,780 client mqtt connect
+INFO 2024-10-16 16:34:12,269 client mqtt connect
+INFO 2024-10-16 16:34:49,819 client mqtt connect
+INFO 2024-10-16 16:35:00,936 client mqtt connect
+INFO 2024-10-16 16:35:04,818 client mqtt connect
+INFO 2024-10-16 16:35:11,737 client mqtt disconnect
+INFO 2024-10-16 16:35:18,822 client mqtt connect
+INFO 2024-10-16 16:38:59,118 client mqtt connect
+INFO 2024-10-16 16:39:02,927 client mqtt connect
+INFO 2024-10-16 16:39:10,971 client mqtt connect
+INFO 2024-10-16 16:40:07,441 client mqtt connect
+INFO 2024-10-16 16:40:21,826 client mqtt connect
+INFO 2024-10-16 16:40:35,009 client mqtt connect
+INFO 2024-10-16 16:41:05,090 client mqtt connect
+INFO 2024-10-16 16:41:32,015 client mqtt disconnect
+INFO 2024-10-16 16:41:38,819 client mqtt connect
+INFO 2024-10-16 16:49:44,705 client mqtt disconnect
+INFO 2024-10-16 16:49:44,705 client mqtt disconnect

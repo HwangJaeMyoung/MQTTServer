@@ -15,7 +15,7 @@ class ServerClient(mqtt.Client):
 
     def on_connect(self,client, userdata, flags, rc):
         logger.info(f"mqtt connect")
-        subscribe()
+        self.subscribe(ServerClient.BASE_TOPIC)
 
     def on_disconnect(self, client, userdata, v1_rc):
         logger.info(f"mqtt disconnect")
@@ -23,6 +23,7 @@ class ServerClient(mqtt.Client):
         print(f"DisConnect. Reconnect in 5 seconds...")
         time.sleep(5)
         connect_mqtt()
+        self.loop_start()
 
     def on_message(self, client, userdata, msg):
         logger.debug(f"messsage arrive topic:{msg.topic}")
@@ -72,10 +73,14 @@ def subscribe():
     mqtt_client.subscribe(ServerClient.BASE_TOPIC)
 
 def start_maintenance():
+    if not mqtt_client.is_connected:return
     mqtt_client.activate_maintenance()
     mqtt_client.disconnect()
+    mqtt_client.loop_stop() 
 
 def end_maintenance():
+    if mqtt_client.is_connected():return
+    mqtt_client.deactivate_maintenance()
     connect_mqtt()
     loop_mqtt()
 
